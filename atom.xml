@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://clfaa.com/"/>
-  <updated>2016-03-21T13:18:42.000Z</updated>
+  <updated>2016-03-21T13:26:52.000Z</updated>
   <id>http://clfaa.com/</id>
   
   <author>
@@ -14,6 +14,52 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://clfaa.com/2016/03/21/%E5%9C%A8github%E4%B8%8A%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E4%B8%BB%E9%A1%B5/"/>
+    <id>http://clfaa.com/2016/03/21/在github上创建个人主页/</id>
+    <published>2016-03-21T13:25:42.000Z</published>
+    <updated>2016-03-21T13:26:52.000Z</updated>
+    
+    <content type="html">&lt;!-- ---
+title: 在github上创建个人主页
+date: 2016-03-21 21:25:42
+tags:
+--- --&gt;
+&lt;p&gt;#在github上创建个人主页&lt;br&gt;@(个人博客)[github]&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每一个github账号都可以创建一个用来存放个人主页，&lt;strong&gt;仓库的名字必须是username/username.github.io&lt;/strong&gt;，创建完成之后就可以使用&lt;strong&gt;username.github.io&lt;/strong&gt;来访问自己的个人主页了。&lt;/p&gt;
+&lt;p&gt;##创建仓库，生成默认主页&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;登录&lt;a href=&quot;https://github.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;github&lt;/a&gt;网站，（若没有账号，请自行注册）。&lt;/li&gt;
+&lt;li&gt;创建新仓库：点击&lt;strong&gt;New respository&lt;/strong&gt;，进入相应页面，填写仓库的信息，&lt;strong&gt;仓库的名字必须是username/username.github.io&lt;/strong&gt;（即在&lt;em&gt;responsitory&lt;br&gt;name&lt;/em&gt;输入框中填写&lt;em&gt;username.github.io&lt;/em&gt;）,然后自行填写其他信息，点击&lt;em&gt;Create responsitory&lt;/em&gt;按钮即完成了新仓库的创建。&lt;/li&gt;
+&lt;li&gt;生成个人主页：进入刚刚创建的仓库主页，点击-&amp;gt;setting-》Options-&amp;gt;Github Pages: Launch automatic page generator-》填写个人主页信息-》Continue to Layouts”-&amp;gt;选择一个自己喜欢的主题-》Publish,然后就可以通过&lt;em&gt;username.github.io&lt;/em&gt;访问你的主页了。&lt;h2 id=&quot;绑定其他域名（可选）&quot;&gt;&lt;a href=&quot;#绑定其他域名（可选）&quot; class=&quot;headerlink&quot; title=&quot;绑定其他域名（可选）&quot;&gt;&lt;/a&gt;绑定其他域名（可选）&lt;/h2&gt;如果其他域名访问个人主页，请进行下面的操作。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;购买个人域名（我个人从新网购买的域名）&lt;/li&gt;
+&lt;li&gt;注册&lt;a href=&quot;https://www.dnspod.cn/Login&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;DNSPod&lt;/a&gt;，点击域名解析-》添加记录，如下图所示 &lt;img src=&quot;./屏幕快照 2016-03-21 下午9.09.57.png&quot; alt=&quot;Alt text&quot;&gt; &lt;/li&gt;
+&lt;li&gt;到域名购买网站，修改dns解析服务器地址为：&lt;strong&gt;f1g1ns1.dnspod.net&lt;/strong&gt; 和 &lt;strong&gt;f1g1ns2.dnspod.net&lt;/strong&gt; &lt;/li&gt;
+&lt;li&gt;将域名与个人主页绑定：到个人主页，再根目录下新建文件CNAME,在文件中添加你的域名（不要带http和www），等1-3天后，即可通过此域名访问自己的个人主页.&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;!-- ---
+title: 在github上创建个人主页
+date: 2016-03-21 21:25:42
+tags:
+--- --&gt;
+&lt;p&gt;#在github上创建个人主页&lt;br&gt;@(个人博客)[github]&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每一个github账号
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>post</title>
