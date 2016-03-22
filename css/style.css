@@ -411,6 +411,9 @@ a {
     float: none;
     display: block;
   }
+  #container .share_jia {
+    padding: 0 13px;
+  }
   #container .share {
     padding: 3px 10px;
   }
