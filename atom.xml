@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://clfaa.com/"/>
-  <updated>2016-03-21T15:22:31.000Z</updated>
+  <updated>2016-03-22T12:30:49.000Z</updated>
   <id>http://clfaa.com/</id>
   
   <author>
@@ -14,6 +14,61 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>自定义Android debug keystore</title>
+    <link href="http://clfaa.com/2016/03/21/%E8%87%AA%E5%AE%9A%E4%B9%89keystore/"/>
+    <id>http://clfaa.com/2016/03/21/自定义keystore/</id>
+    <published>2016-03-21T14:50:57.000Z</published>
+    <updated>2016-03-22T12:30:49.000Z</updated>
+    
+    <content type="html">&lt;h2 id=&quot;为什么替换&quot;&gt;&lt;a href=&quot;#为什么替换&quot; class=&quot;headerlink&quot; title=&quot;为什么替换&quot;&gt;&lt;/a&gt;为什么替换&lt;/h2&gt;&lt;p&gt;Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。&lt;/p&gt;
+&lt;h2 id=&quot;修改keystore信息&quot;&gt;&lt;a href=&quot;#修改keystore信息&quot; class=&quot;headerlink&quot; title=&quot;修改keystore信息&quot;&gt;&lt;/a&gt;修改keystore信息&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;想要替换默认的keystore，那么你的keystore的密码、别名等信息必须和默认debug.keystore的一样，默认debug.keystore的信息如下：&lt;br&gt;Keystore name: “debug.keystore”&lt;br&gt;Keystore password: “android”&lt;br&gt;Key alias: “androiddebugkey”&lt;br&gt;Key password: “android”&lt;br&gt;CN: “CN=Android Debug,O=Android,C=US”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;重命名.keystore文件名：将自己的.keystore修改名称修改为debug.keystore（可选，只是在输入下面的命令是，将debug.keystore更换为你的keystore文件名）&lt;/li&gt;
+&lt;li&gt;修改keystore密码为“android”：键入命令&lt;br&gt;&lt;code&gt;keytool -storepasswd -new android -keystore debug.keystore&lt;/code&gt;&lt;br&gt;按提示输入原密码，修改密码完成&lt;/li&gt;
+&lt;li&gt;修改别名为androiddebugkey：&lt;br&gt;&lt;code&gt;keytool -changealias -keystore debug.keystore -alias 原别名 -destalias androiddebugkey&lt;/code&gt;,&lt;br&gt;按提示输入keystore密码、alias 原密码、新密码、再次输入新密码&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;替换IDE的keystore&quot;&gt;&lt;a href=&quot;#替换IDE的keystore&quot; class=&quot;headerlink&quot; title=&quot;替换IDE的keystore&quot;&gt;&lt;/a&gt;替换IDE的keystore&lt;/h2&gt;&lt;h3 id=&quot;Eclipse&quot;&gt;&lt;a href=&quot;#Eclipse&quot; class=&quot;headerlink&quot; title=&quot;Eclipse&quot;&gt;&lt;/a&gt;Eclipse&lt;/h3&gt;&lt;p&gt;依次选择：Window-&amp;gt;Preferences-&amp;gt;Android-&amp;gt;Build-&amp;gt;Custom debug keystore，选择你刚刚修改完成的keystore文件。&lt;/p&gt;
+&lt;h3 id=&quot;Intellij-Idea&quot;&gt;&lt;a href=&quot;#Intellij-Idea&quot; class=&quot;headerlink&quot; title=&quot;Intellij Idea&quot;&gt;&lt;/a&gt;Intellij Idea&lt;/h3&gt;&lt;p&gt;依次选择：Project structure -&amp;gt; Facets -&amp;gt;Packaging -&amp;gt; custom debug keystore，选择你刚刚修改完成的keystore文件。&lt;/p&gt;
+&lt;h3 id=&quot;Android-Studio（不需要进行上面的步骤）&quot;&gt;&lt;a href=&quot;#Android-Studio（不需要进行上面的步骤）&quot; class=&quot;headerlink&quot; title=&quot;Android Studio（不需要进行上面的步骤）&quot;&gt;&lt;/a&gt;Android Studio（不需要进行上面的步骤）&lt;/h3&gt;&lt;p&gt;在项目的build.gradle的中引入如下代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;android {
+         //配置keystore签名
+        signingConfigs {
+            release {
+                storeFile file(&amp;quot;xxxxxxxxStore&amp;quot;)
+                storePassword &amp;quot;xxxxxxxx&amp;quot;
+                keyAlias &amp;quot;timehut team&amp;quot;
+                keyPassword &amp;quot;xxxxxxxx&amp;quot;
+            }
+        }
+        buildTypes {
+            debug {
+                signingConfig signingConfigs.release
+            }
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;为什么替换&quot;&gt;&lt;a href=&quot;#为什么替换&quot; class=&quot;headerlink&quot; title=&quot;为什么替换&quot;&gt;&lt;/a&gt;为什么替换&lt;/h2&gt;&lt;p&gt;Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在
+    
+    </summary>
+    
+    
+      <category term="Android" scheme="http://clfaa.com/tags/Android/"/>
+    
+      <category term="Keystore" scheme="http://clfaa.com/tags/Keystore/"/>
+    
+      <category term="Debug" scheme="http://clfaa.com/tags/Debug/"/>
+    
+  </entry>
   
   <entry>
     <title>在github上创建个人主页</title>
