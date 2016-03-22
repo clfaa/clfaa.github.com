@@ -79,7 +79,7 @@
 						<li>Links</li>
 						
 						
-						<li>Über</li>
+						<li>About</li>
 						
 					</ul>
 				</div>
@@ -116,7 +116,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Android-keystore-debug/" style="font-size: 10px;">Android|keystore|debug</a> <a href="/tags/github/" style="font-size: 10px;">github</a>
+						<a href="/tags/github/" style="font-size: 10px;">github</a>
 					</div>
 				</section>
 				
@@ -201,93 +201,6 @@
 </nav>
 
       <div class="body-wrap">
-  
-    <article id="post-自定义keystore" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/03/21/自定义keystore/" class="article-date">
-  	<time datetime="2016-03-21T14:50:57.000Z" itemprop="datePublished">2016-03-21</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/21/自定义keystore/">自定义Android debug keystore</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="为什么替换"><a href="#为什么替换" class="headerlink" title="为什么替换"></a>为什么替换</h2><p>Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。</p>
-<h2 id="修改keystore信息"><a href="#修改keystore信息" class="headerlink" title="修改keystore信息"></a>修改keystore信息</h2><blockquote>
-<p>想要替换默认的keystore，那么你的keystore的密码、别名等信息必须和默认debug.keystore的一样，默认debug.keystore的信息如下：<br>Keystore name: “debug.keystore”<br>Keystore password: “android”<br>Key alias: “androiddebugkey”<br>Key password: “android”<br>CN: “CN=Android Debug,O=Android,C=US”</p>
-</blockquote>
-<ol>
-<li>重命名.keystore文件名：将自己的.keystore修改名称修改为debug.keystore（可选，只是在输入下面的命令是，将debug.keystore更换为你的keystore文件名）</li>
-<li>修改keystore密码为“android”：键入命令<br><code>keytool -storepasswd -new android -keystore debug.keystore</code><br>按提示输入原密码，修改密码完成</li>
-<li>修改别名为androiddebugkey：<br><code>keytool -changealias -keystore debug.keystore -alias 原别名 -destalias androiddebugkey</code>,<br>按提示输入keystore密码、alias 原密码、新密码、再次输入新密码</li>
-</ol>
-<h2 id="替换IDE的keystore"><a href="#替换IDE的keystore" class="headerlink" title="替换IDE的keystore"></a>替换IDE的keystore</h2><h3 id="Eclipse"><a href="#Eclipse" class="headerlink" title="Eclipse"></a>Eclipse</h3><p>依次选择：Window-&gt;Preferences-&gt;Android-&gt;Build-&gt;Custom debug keystore，选择你刚刚修改完成的keystore文件。</p>
-<h3 id="Intellij-Idea"><a href="#Intellij-Idea" class="headerlink" title="Intellij Idea"></a>Intellij Idea</h3><p>依次选择：Project structure -&gt; Facets -&gt;Packaging -&gt; custom debug keystore，选择你刚刚修改完成的keystore文件。</p>
-<h3 id="Android-Studio（不需要进行上面的步骤）"><a href="#Android-Studio（不需要进行上面的步骤）" class="headerlink" title="Android Studio（不需要进行上面的步骤）"></a>Android Studio（不需要进行上面的步骤）</h3><p>在项目的build.gradle的中引入如下代码：</p>
-<pre><code>android {
-         //配置keystore签名
-        signingConfigs {
-            release {
-                storeFile file(&quot;xxxxxxxxStore&quot;)
-                storePassword &quot;xxxxxxxx&quot;
-                keyAlias &quot;timehut team&quot;
-                keyPassword &quot;xxxxxxxx&quot;
-            }
-        }
-        buildTypes {
-            debug {
-                signingConfig signingConfigs.release
-            }
-            release {
-                signingConfig signingConfigs.release
-            }
-        }
-}
-</code></pre>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android-keystore-debug/">Android|keystore|debug</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
   
     <article id="post-在github上创建个人主页" class="article article-type-post" itemscope itemprop="blogPost">
   
