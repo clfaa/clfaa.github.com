@@ -24,8 +24,8 @@ public interface Executor {
 就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。当我们想创建并执行一个线程的时候，通常是这样的。
 new Thread(new(RunnableTask())).start()
 是不是短！平！快！。这样不是很">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1804565-1f77ffdbfcbd1fd8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2016-04-03T18:33:11.000Z">
+<meta property="og:image" content="http://clfaa.com/images/Mediator_Pattern.jpg">
+<meta property="og:updated_time" content="2016-04-03T18:46:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android concurrent（一）—— Executor接口">
 <meta name="twitter:description" content="设计理念——为何而存在先来一发源码。
@@ -35,7 +35,7 @@ public interface Executor {
 就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。当我们想创建并执行一个线程的时候，通常是这样的。
 new Thread(new(RunnableTask())).start()
 是不是短！平！快！。这样不是很">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1804565-1f77ffdbfcbd1fd8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:image" content="http://clfaa.com/images/Mediator_Pattern.jpg">
   
     <link rel="alternative" href="/atom.xml" title="常飞" type="application/atom+xml">
   
@@ -316,7 +316,7 @@ executor.execute(new Runnable(){
 </ol>
 </blockquote>
 <p>UML类图：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1804565-1f77ffdbfcbd1fd8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Mediator_Pattern.jpg"></p>
+<p><img src="/images/Mediator_Pattern.jpg" alt="Mediator_Pattern.jpg"></p>
 <p>其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。</p>
 
       

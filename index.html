@@ -286,7 +286,7 @@ executor.execute(new Runnable(){
 </ol>
 </blockquote>
 <p>UML类图：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1804565-1f77ffdbfcbd1fd8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Mediator_Pattern.jpg"></p>
+<p><img src="/images/Mediator_Pattern.jpg" alt="Mediator_Pattern.jpg"></p>
 <p>其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。</p>
 
       

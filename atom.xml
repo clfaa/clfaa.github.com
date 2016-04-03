@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://clfaa.com/"/>
-  <updated>2016-04-03T18:33:11.000Z</updated>
+  <updated>2016-04-03T18:46:21.000Z</updated>
   <id>http://clfaa.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://clfaa.com/2016/04/04/Android-concurrent%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94-Executor%E6%8E%A5%E5%8F%A3/"/>
     <id>http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/</id>
     <published>2016-04-03T18:30:45.000Z</published>
-    <updated>2016-04-03T18:33:11.000Z</updated>
+    <updated>2016-04-03T18:46:21.000Z</updated>
     
     <content type="html">&lt;h4 id=&quot;设计理念——为何而存在&quot;&gt;&lt;a href=&quot;#设计理念——为何而存在&quot; class=&quot;headerlink&quot; title=&quot;设计理念——为何而存在&quot;&gt;&lt;/a&gt;设计理念——为何而存在&lt;/h4&gt;&lt;p&gt;先来一发源码。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;public interface Executor {
@@ -105,7 +105,7 @@ executor.execute(new Runnable(){
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;UML类图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/1804565-1f77ffdbfcbd1fd8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;Mediator_Pattern.jpg&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/Mediator_Pattern.jpg&quot; alt=&quot;Mediator_Pattern.jpg&quot;&gt;&lt;/p&gt;
 &lt;p&gt;其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。&lt;/p&gt;
 </content>
     
