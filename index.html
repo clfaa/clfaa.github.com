@@ -528,8 +528,8 @@ executor.execute(new Runnable(){
 <li>修改keystore密码为“android”：键入命令<br><code>keytool -storepasswd -new android -keystore debug.keystore</code><br>按提示输入原密码，修改密码完成</li>
 <li>修改别名为androiddebugkey：<br><code>keytool -changealias -keystore debug.keystore -alias 原别名 -destalias androiddebugkey</code>,<br>按提示输入keystore密码、alias 原密码、新密码、再次输入新密码</li>
 </ol>
-<h2 id="替换IDE的keystore"><a href="#替换IDE的keystore" class="headerlink" title="替换IDE的keystore"></a>替换IDE的keystore</h2><h3 id="Eclipse"><a href="#Eclipse" class="headerlink" title="Eclipse"></a>Eclipse</h3><p>依次选择：Window-&gt;Preferences-&gt;Android-&gt;Build-&gt;Custom debug keystore，选择你刚刚修改完成的keystore文件。</p>
-<h3 id="Intellij-Idea"><a href="#Intellij-Idea" class="headerlink" title="Intellij Idea"></a>Intellij Idea</h3><p>依次选择：Project structure -&gt; Facets -&gt;Packaging -&gt; custom debug keystore，选择你刚刚修改完成的keystore文件。</p>
+<h2 id="替换IDE的keystore"><a href="#替换IDE的keystore" class="headerlink" title="替换IDE的keystore"></a>替换IDE的keystore</h2><h3 id="Eclipse"><a href="#Eclipse" class="headerlink" title="Eclipse"></a>Eclipse</h3><p>依次选择：Window-&gt;Preferences-&gt;Android-&gt;Build-&gt;Custom debug keystore，选择你刚刚修改完成的keystore文件。<br><img src="/images/debug_key_eclipse.png" alt="Alt text"></p>
+<h3 id="Intellij-Idea"><a href="#Intellij-Idea" class="headerlink" title="Intellij Idea"></a>Intellij Idea</h3><p>依次选择：Project structure -&gt; Facets -&gt;Packaging -&gt; custom debug keystore，选择你刚刚修改完成的keystore文件。<br><img src="/images/debug_key_intellj.png" alt="Alt text"></p>
 <h3 id="Android-Studio（不需要进行上面的步骤）"><a href="#Android-Studio（不需要进行上面的步骤）" class="headerlink" title="Android Studio（不需要进行上面的步骤）"></a>Android Studio（不需要进行上面的步骤）</h3><p>在项目的build.gradle的中引入如下代码：</p>
 <pre><code>android {
          //配置keystore签名
