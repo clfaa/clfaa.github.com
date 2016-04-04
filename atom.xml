@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://clfaa.com/"/>
-  <updated>2016-04-04T11:22:32.000Z</updated>
+  <updated>2016-04-04T11:26:03.000Z</updated>
   <id>http://clfaa.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://clfaa.com/2016/04/04/Android-concurrent%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94-Future%E5%92%8CFutureTask/"/>
     <id>http://clfaa.com/2016/04/04/Android-concurrent（二）——-Future和FutureTask/</id>
     <published>2016-04-04T10:49:48.000Z</published>
-    <updated>2016-04-04T11:22:32.000Z</updated>
+    <updated>2016-04-04T11:26:03.000Z</updated>
     
     <content type="html">&lt;h2 id=&quot;Future接口&quot;&gt;&lt;a href=&quot;#Future接口&quot; class=&quot;headerlink&quot; title=&quot;Future接口&quot;&gt;&lt;/a&gt;Future接口&lt;/h2&gt;&lt;h4 id=&quot;官方解释&quot;&gt;&lt;a href=&quot;#官方解释&quot; class=&quot;headerlink&quot; title=&quot;官方解释&quot;&gt;&lt;/a&gt;官方解释&lt;/h4&gt;&lt;p&gt;先让我们看一下，官方对它的解释：&lt;/p&gt;
 &lt;blockquote&gt;
@@ -32,22 +32,20 @@
 &lt;li&gt;get方法获得计算结果的唯一方法，如果计算没有完成，此方法会堵塞直到计算完成。&lt;/li&gt;
 &lt;li&gt;cancel方法可以用来取消这次计算。一个已完成的计算是不能被取消的。&lt;/li&gt;
 &lt;li&gt;isDone和isCancelled方法可以查询计算是否正常完成还是被取消掉了。&lt;/li&gt;
-&lt;li&gt;如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&amp;lt;?&amp;gt;并将get的返回值设为null。&lt;/li&gt;
+&lt;li&gt;如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&amp;lt;?&amp;gt;并将get的返回值设为null。&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h4 id=&quot;源码分析&quot;&gt;&lt;a href=&quot;#源码分析&quot; class=&quot;headerlink&quot; title=&quot;源码分析&quot;&gt;&lt;/a&gt;源码分析&lt;/h4&gt; public interface Future&lt;v&gt; {&lt;pre&gt;&lt;code&gt;//取消方法
+boolean cancel(boolean mayInterruptIfRunning);
+//计算是否被取消：如果计算在正常结束前被取消了，则返回true
+boolean isCancelled();
+//计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
+boolean isDone();
+//检索返回结果，如果计算未完成，则等待任务完成。
+V get() throws InterruptedException, ExecutionException;
+//和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
+V get(long timeout, TimeUnit unit)
+    throws InterruptedException, ExecutionException, TimeoutException;
+&lt;/code&gt;&lt;/pre&gt; }&lt;br&gt;V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。&lt;br&gt;&lt;strong&gt;两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。&lt;/strong&gt;&lt;br&gt;对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。&lt;/v&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h4 id=&quot;源码分析&quot;&gt;&lt;a href=&quot;#源码分析&quot; class=&quot;headerlink&quot; title=&quot;源码分析&quot;&gt;&lt;/a&gt;源码分析&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;public interface Future&amp;lt;V&amp;gt; {
-    //取消方法
-    boolean cancel(boolean mayInterruptIfRunning);
-    //计算是否被取消：如果计算在正常结束前被取消了，则返回true
-    boolean isCancelled();
-    //计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
-    boolean isDone();
-    //检索返回结果，如果计算未完成，则等待任务完成。
-    V get() throws InterruptedException, ExecutionException;
-    //和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
-    V get(long timeout, TimeUnit unit)
-        throws InterruptedException, ExecutionException, TimeoutException;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。&lt;br&gt;&lt;strong&gt;两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。&lt;/strong&gt;&lt;br&gt;对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。&lt;/p&gt;
 &lt;p&gt;总结：到这儿，Future之所以被设计的原因已经很明了了，其实就是帮助我们可以自由的控制异步任务：可以通过它来查询异步任务的执行状态，取消任务，也可以获得正常的结果。&lt;br&gt;下面我们来看看FutureTask，Future接口的实际实现类。&lt;/p&gt;
 &lt;h2 id=&quot;Future的实现：FutureTask&quot;&gt;&lt;a href=&quot;#Future的实现：FutureTask&quot; class=&quot;headerlink&quot; title=&quot;Future的实现：FutureTask&quot;&gt;&lt;/a&gt;Future的实现：FutureTask&lt;/h2&gt;&lt;p&gt;其实FutureTask并非直接实现自Future接口，而是RunnableFuture接口，RunnableFutrue是什么，看下源码，便一目了然。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;public interface RunnableFuture&amp;lt;V&amp;gt; extends Runnable, Future&amp;lt;V&amp;gt; {
@@ -133,16 +131,26 @@ private static final int INTERRUPTED  = 6;
     
     <summary type="html">
     
-      &lt;h2 id=&quot;Future接口&quot;&gt;&lt;a href=&quot;#Future接口&quot; class=&quot;headerlink&quot; title=&quot;Future接口&quot;&gt;&lt;/a&gt;Future接口&lt;/h2&gt;&lt;h4 id=&quot;官方解释&quot;&gt;&lt;a href=&quot;#官方解释&quot; class=&quot;headerlink&quot; 
+      &lt;h2 id=&quot;Future接口&quot;&gt;&lt;a href=&quot;#Future接口&quot; class=&quot;headerlink&quot; title=&quot;Future接口&quot;&gt;&lt;/a&gt;Future接口&lt;/h2&gt;&lt;h4 id=&quot;官方解释&quot;&gt;&lt;a href=&quot;#官方解释&quot; class=&quot;headerlink&quot; title=&quot;官方解释&quot;&gt;&lt;/a&gt;官方解释&lt;/h4&gt;&lt;p&gt;先让我们看一下，官方对它的解释：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A Future represents the result of an asynchronous computation.  Methods are provided to check if the computation is complete, to wait for its completion, and to retrieve the result of the computation.  The result can only be retrieved using method get when the computation has completed, blocking if necessary until it is ready.  Cancellation is performed by the cancel method.  Additional methods are provided to determine if the task completed normally or was cancelled. Once a computation has completed, the computation cannot be cancelled. If you would like to use a Future for the sake of cancellability but not provide a usable result, you can declare types of the form Future&amp;lt;?&amp;gt; and return null as a result of the underlying task.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;要点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个Future代表了一个异步计算的结果。 它提供了可以坚持计算是否完成、等待计算完成、检索计算结果的方法。&lt;/li&gt;
+&lt;li&gt;get方法获得计算结果的唯一方法，如果计算没有完成，此方法会堵塞直到计算完成。&lt;/li&gt;
+&lt;li&gt;cancel方法可以用来取消这次计算。一个已完成的计算是不能被取消的。&lt;/li&gt;
+&lt;li&gt;isDone和isCancelled方法可以查询计算是否正常完成还是被取消掉了。&lt;/li&gt;
+&lt;li&gt;如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&amp;lt;?&amp;gt;并将get的返回值设为null。
     
     </summary>
     
     
       <category term="Android" scheme="http://clfaa.com/tags/Android/"/>
     
-      <category term="Concurrent" scheme="http://clfaa.com/tags/Concurrent/"/>
-    
       <category term="Future" scheme="http://clfaa.com/tags/Future/"/>
+    
+      <category term="Concurrent" scheme="http://clfaa.com/tags/Concurrent/"/>
     
   </entry>
   

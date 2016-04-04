@@ -16,7 +16,7 @@ A Future represents the result of an asynchronous computation.  Methods are prov
 <meta property="og:description" content="Future接口官方解释先让我们看一下，官方对它的解释：
 
 A Future represents the result of an asynchronous computation.  Methods are provided to check if the computation is complete, to wait for its completion, and to retrieve">
-<meta property="og:updated_time" content="2016-04-04T11:22:32.000Z">
+<meta property="og:updated_time" content="2016-04-04T11:26:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android concurrent（二）—— Future和FutureTask">
 <meta name="twitter:description" content="Future接口官方解释先让我们看一下，官方对它的解释：
@@ -79,7 +79,7 @@ A Future represents the result of an asynchronous computation.  Methods are prov
 						<li>Tags</li>
 						
 						
-						<li>About</li>
+						<li>Über</li>
 						
 					</ul>
 				</div>
@@ -229,22 +229,20 @@ A Future represents the result of an asynchronous computation.  Methods are prov
 <li>get方法获得计算结果的唯一方法，如果计算没有完成，此方法会堵塞直到计算完成。</li>
 <li>cancel方法可以用来取消这次计算。一个已完成的计算是不能被取消的。</li>
 <li>isDone和isCancelled方法可以查询计算是否正常完成还是被取消掉了。</li>
-<li>如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&lt;?&gt;并将get的返回值设为null。</li>
+<li>如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&lt;?&gt;并将get的返回值设为null。<a id="more"></a>
+<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4> public interface Future<v> {<pre><code>//取消方法
+boolean cancel(boolean mayInterruptIfRunning);
+//计算是否被取消：如果计算在正常结束前被取消了，则返回true
+boolean isCancelled();
+//计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
+boolean isDone();
+//检索返回结果，如果计算未完成，则等待任务完成。
+V get() throws InterruptedException, ExecutionException;
+//和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
+V get(long timeout, TimeUnit unit)
+    throws InterruptedException, ExecutionException, TimeoutException;
+</code></pre> }<br>V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。<br><strong>两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。</strong><br>对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。</v></li>
 </ol>
-<h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><pre><code>public interface Future&lt;V&gt; {
-    //取消方法
-    boolean cancel(boolean mayInterruptIfRunning);
-    //计算是否被取消：如果计算在正常结束前被取消了，则返回true
-    boolean isCancelled();
-    //计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
-    boolean isDone();
-    //检索返回结果，如果计算未完成，则等待任务完成。
-    V get() throws InterruptedException, ExecutionException;
-    //和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
-    V get(long timeout, TimeUnit unit)
-        throws InterruptedException, ExecutionException, TimeoutException;
-}
-</code></pre><p>V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。<br><strong>两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。</strong><br>对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。</p>
 <p>总结：到这儿，Future之所以被设计的原因已经很明了了，其实就是帮助我们可以自由的控制异步任务：可以通过它来查询异步任务的执行状态，取消任务，也可以获得正常的结果。<br>下面我们来看看FutureTask，Future接口的实际实现类。</p>
 <h2 id="Future的实现：FutureTask"><a href="#Future的实现：FutureTask" class="headerlink" title="Future的实现：FutureTask"></a>Future的实现：FutureTask</h2><p>其实FutureTask并非直接实现自Future接口，而是RunnableFuture接口，RunnableFutrue是什么，看下源码，便一目了然。</p>
 <pre><code>public interface RunnableFuture&lt;V&gt; extends Runnable, Future&lt;V&gt; {
