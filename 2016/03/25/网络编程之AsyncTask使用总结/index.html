@@ -14,7 +14,7 @@ AsyncTask enables proper and easy use of the UI thread. This class allows to per
 <meta property="og:site_name" content="常飞">
 <meta property="og:description" content="官方概述
 AsyncTask enables proper and easy use of the UI thread. This class allows to perform background operations and publish results on the UI thread without having to manipulate threads and/or handler">
-<meta property="og:updated_time" content="2016-03-25T14:21:44.000Z">
+<meta property="og:updated_time" content="2016-04-04T11:09:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="网络编程之AsyncTask使用总结">
 <meta name="twitter:description" content="官方概述
@@ -76,7 +76,7 @@ AsyncTask enables proper and easy use of the UI thread. This class allows to per
 						<li>Tags</li>
 						
 						
-						<li>Über</li>
+						<li>About</li>
 						
 					</ul>
 				</div>
@@ -221,7 +221,7 @@ AsyncTask enables proper and easy use of the UI thread. This class allows to per
 <p>AsyncTask is designed to be a helper class around Thread and Handler and does not constitute a generic threading framework. AsyncTasks should ideally be used for short operations (a few seconds at the most.) If you need to keep threads running for long periods of time, it is highly recommended you use the various APIs provided by the java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.</p>
 <p>An asynchronous task is defined by a computation that runs on a background thread and whose result is published on the UI thread. An asynchronous task is defined by 3 generic types, called Params, Progress and Result, and 4 steps, called onPreExecute, doInBackground, onProgressUpdate and onPostExecute.</p>
 </blockquote>
-<p>翻译：<em>AsyncTask</em>可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作<em>thread</em>和<em>handler</em>。<br>AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用<em>java.util.concurrent</em>包提供的API,比如<em>Executor</em>,<em>TreadPoolExecutor</em>和<em>FutureTask</em>。<br>一个<em>AsyncTask</em>可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个<em>AsyncTask</em>需要指定<em>Params</em>,<em>Progress</em>,<em>Result</em>三个泛型的类型，在执行过程中将调用<em>onPreExecute</em>,<em>doInBackground</em>, <em>onProgressUpdate</em> 和 <em>onPostExecute</em>四个方法。</p>
+<p>翻译：<em>AsyncTask</em>可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作<em>thread</em>和<em>handler</em>。<br>AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用<em>java.util.concurrent</em>包提供的API,比如<em>Executor</em>,<em>TreadPoolExecutor</em>和<em>FutureTask</em>。<br>一个<em>AsyncTask</em>可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个<em>AsyncTask</em>需要指定<em>Params</em>,<em>Progress</em>,<em>Result</em>三个泛型的类型，在执行过程中将调用<em>onPreExecute</em>,<em>doInBackground</em>, <em>onProgressUpdate</em> 和 <em>onPostExecute</em>四个方法。<br>&lt;!–more</p>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>AsyncTask为抽象类,使用前必须先定义一个它的子类，实现<em>doInBackground()</em>方法，为Params,Progress,Result指定确切的参数。</p>
 <h5 id="实现说明"><a href="#实现说明" class="headerlink" title="实现说明"></a>实现说明</h5><table>
 <thead>
@@ -334,7 +334,7 @@ AsyncTask enables proper and easy use of the UI thread. This class allows to per
 </blockquote>
 <p>当Activity销毁后，AsyncTask继续执行直到完成。如果你在Activity#onDestroy()中调用了 cancel(boolean)方法，它会继续执行onCancelled(Result result)方法，如果你没有调用 cancel(boolean)方法，它会执行onPostExecute(Result) 方法。</p>
 <p>假如在Activity被销毁前，我们没有调用AsyncTask#cancel(boolean)方法。这可能引起内存泄露，导致程序崩溃。比如你在onPostExecute(Result) 中对Activity的View进行操作，但是这些View已经随着Activity的销毁不再存在。所以，我们要确保在Activity销毁前，取消掉Task。</p>
-<p>因为异步任务有方法在background Thread 中执行（doInBackground()），并且也有方法在UI线程中执行（比如，onPostExecute()）；在Task运行阶段，它将持有Activity的引用。但是如果Activity已经被销毁，它仍然持有这个的内存的引用。如何在后续的操作中，使用这个已经销毁的Activity的引用，将直接导致程序崩溃。</p>
+<p>因为异步任务有方法在background Thread 中执行（doInBackground()），并且也有方法在UI线程中执行（比如，onPostExecute()）；在Task运行阶段，它将持有Activity的引用。但是如果Activity已经被销毁，它仍然持有这个的内存的引用。如何在后续的操作中，使用这个已经销毁的Activity的引用，将直接导致程序崩溃。–&gt;</p>
 
       
     </div>
