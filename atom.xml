@@ -143,13 +143,13 @@ private static final int INTERRUPTED  = 6;
     <link href="http://clfaa.com/2016/04/04/Android-concurrent%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94-Executor%E6%8E%A5%E5%8F%A3/"/>
     <id>http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/</id>
     <published>2016-04-03T18:30:45.000Z</published>
-    <updated>2016-04-04T10:51:07.000Z</updated>
+    <updated>2016-04-04T11:05:09.000Z</updated>
     
     <content type="html">&lt;h4 id=&quot;设计理念——为何而存在&quot;&gt;&lt;a href=&quot;#设计理念——为何而存在&quot; class=&quot;headerlink&quot; title=&quot;设计理念——为何而存在&quot;&gt;&lt;/a&gt;设计理念——为何而存在&lt;/h4&gt;&lt;p&gt;先来一发源码。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;public interface Executor {
     void execute(Runnable command);
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就是这么短。那么这么短的一个接口存在的意义是什么呢？&lt;br&gt;下面就来分析一下。&lt;br&gt;当我们想创建并执行一个线程的时候，通常是这样的。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就是这么短。那么这么短的一个接口存在的意义是什么呢？&lt;br&gt;下面就来分析一下。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;br&gt;当我们想创建并执行一个线程的时候，通常是这样的。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;new Thread(new(RunnableTask())).start()
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;是不是短！平！快！。这样不是很好吗？但是使用这种方式，我们无法控制程序中线程的数量，创建过多的线程会带来性能问题。我们需要一种方式控制线程的数量，有时我们还希望控制各个任务之间调度关系。Executor接口正式为解决这个问题而来。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -235,7 +235,10 @@ executor.execute(new Runnable(){
     <summary type="html">
     
       &lt;h4 id=&quot;设计理念——为何而存在&quot;&gt;&lt;a href=&quot;#设计理念——为何而存在&quot; class=&quot;headerlink&quot; title=&quot;设计理念——为何而存在&quot;&gt;&lt;/a&gt;设计理念——为何而存在&lt;/h4&gt;&lt;p&gt;先来一发源码。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;public inte
+&lt;pre&gt;&lt;code&gt;public interface Executor {
+    void execute(Runnable command);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就是这么短。那么这么短的一个接口存在的意义是什么呢？&lt;br&gt;下面就来分析一下。&lt;br&gt;
     
     </summary>
     
