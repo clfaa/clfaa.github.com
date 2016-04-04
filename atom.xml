@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://clfaa.com/"/>
-  <updated>2016-04-04T11:15:35.000Z</updated>
+  <updated>2016-04-04T11:21:18.000Z</updated>
   <id>http://clfaa.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://clfaa.com/2016/04/04/Android-concurrent%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94-Future%E5%92%8CFutureTask/"/>
     <id>http://clfaa.com/2016/04/04/Android-concurrent（二）——-Future和FutureTask/</id>
     <published>2016-04-04T10:49:48.000Z</published>
-    <updated>2016-04-04T11:15:35.000Z</updated>
+    <updated>2016-04-04T11:21:18.000Z</updated>
     
     <content type="html">&lt;h2 id=&quot;Future接口&quot;&gt;&lt;a href=&quot;#Future接口&quot; class=&quot;headerlink&quot; title=&quot;Future接口&quot;&gt;&lt;/a&gt;Future接口&lt;/h2&gt;&lt;h4 id=&quot;官方解释&quot;&gt;&lt;a href=&quot;#官方解释&quot; class=&quot;headerlink&quot; title=&quot;官方解释&quot;&gt;&lt;/a&gt;官方解释&lt;/h4&gt;&lt;p&gt;先让我们看一下，官方对它的解释：&lt;/p&gt;
 &lt;blockquote&gt;
@@ -34,73 +34,86 @@
 &lt;li&gt;isDone和isCancelled方法可以查询计算是否正常完成还是被取消掉了。&lt;/li&gt;
 &lt;li&gt;如果我们不想知道此异步计算的结果，只是想随时取消这次计算，可以通过声明Future&amp;lt;?&amp;gt;并将get的返回值设为null。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;!--more
-#### 源码分析
-    public interface Future&lt;V&gt; {
-        //取消方法
-        boolean cancel(boolean mayInterruptIfRunning);
-        //计算是否被取消：如果计算在正常结束前被取消了，则返回true
-        boolean isCancelled();
-        //计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
-        boolean isDone();
-        //检索返回结果，如果计算未完成，则等待任务完成。
-        V get() throws InterruptedException, ExecutionException;
-        //和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
-        V get(long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException, TimeoutException;
-    }
-V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。
-**两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。**
-对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。
-
-总结：到这儿，Future之所以被设计的原因已经很明了了，其实就是帮助我们可以自由的控制异步任务：可以通过它来查询异步任务的执行状态，取消任务，也可以获得正常的结果。
-下面我们来看看FutureTask，Future接口的实际实现类。
-
-## Future的实现：FutureTask
-其实FutureTask并非直接实现自Future接口，而是RunnableFuture接口，RunnableFutrue是什么，看下源码，便一目了然。
-
-    public interface RunnableFuture&lt;V&gt; extends Runnable, Future&lt;V&gt; {
-        void run();
-    }
-所以，FutureTask同时实现了Runnable和Future两大知名接口，所以FutureTask可以提交给[Executor](http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/)。
-#####FutureTask源码分析
-首先我们来看一下FutureTask的两个个构造函数
-
-    //构造函数一
-    public FutureTask(Callable&lt;V&gt; callable) {
-        if (callable == null)
-            throw new NullPointerException();
-        this.callable = callable;
-        this.state = NEW;       // ensure visibility of callable
-    }
-    //构造函数二
-    public FutureTask(Runnable runnable, V result) {
-        this.callable = Executors.callable(runnable, result);
-        this.state = NEW;       // ensure visibility of callable
-    }
-
-源码显示，不管我们使用哪个构造函数，其内部都是把将传入的参数保存为callable，并且把状态置为NEW。FutureTask一共声明了7个状态。
-
-    private static final int NEW          = 0;
-    private static final int COMPLETING   = 1;
-    private static final int NORMAL       = 2;
-    private static final int EXCEPTIONAL  = 3;
-    private static final int CANCELLED    = 4;
-    private static final int INTERRUPTING = 5;
-    private static final int INTERRUPTED  = 6;
-
-|状态|说明|
-|----|----|
-|NEW|初始状态|
-|COMPLETING|进行中状态，表示正在设置结果。很短暂的一个状态|
-|NORMAL|正常结束的状态|
-|EXCEPTIONAL|异常状态，任务异常结束|
-|CANCELLED|任务成功被取消的状态|
-|INTERRUPTING|很短暂的状态，当在NEW状态下，调用了cancel(true),则状态就会转换为INTERRUPTING，直到执行了Thread#interrupt()方法，状态转换为INTERRUPTED|
-|INTERRUPTED|任务被中断后的状态|
-#### run()方法讲解
-FatureTask被创建后，下面进入run()方法，
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (state != NEW ||&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      !UNSAFE.compareAndSwapObject(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;, runnerOffset,&lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;, Thread.currentThread()))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Callable&amp;lt;V&amp;gt; c = callable;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (c != &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt; &amp;amp;&amp;amp; state == NEW) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;           V result;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;           &lt;span class=&quot;keyword&quot;&gt;boolean&lt;/span&gt; ran;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                result = c.call();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                ran = &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125; &lt;span class=&quot;keyword&quot;&gt;catch&lt;/span&gt; (Throwable ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               result = &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               ran = &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               setException(ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (ran)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               set(result);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;finally&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        runner = &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; s = state;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (s &amp;gt;= INTERRUPTING)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            handlePossibleCancellationInterrupt(s);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h4 id=&quot;源码分析&quot;&gt;&lt;a href=&quot;#源码分析&quot; class=&quot;headerlink&quot; title=&quot;源码分析&quot;&gt;&lt;/a&gt;源码分析&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;public interface Future&amp;lt;V&amp;gt; {
+    //取消方法
+    boolean cancel(boolean mayInterruptIfRunning);
+    //计算是否被取消：如果计算在正常结束前被取消了，则返回true
+    boolean isCancelled();
+    //计算是否完成:不管是正常取消、异常结束、还是被取消了，都返回true
+    boolean isDone();
+    //检索返回结果，如果计算未完成，则等待任务完成。
+    V get() throws InterruptedException, ExecutionException;
+    //和get()方法类似，我们可以通过参数timout和unit指定等待的时间上限，如果时间结束了，计算还未完成，就会抛出TimeOutException异常
+    V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;V是实际计算结果的类型，也就是get()方法返回的类型。在其中，一共五个方法。&lt;br&gt;&lt;strong&gt;两个状态查询方法(isCancelled和isDone方法), 一个取消计算方法(cancel)，两个检索结果方法(get()和get(long,TimeUnit))方法。&lt;/strong&gt;&lt;br&gt;对于已经结束任务、已经取消过的任务、不能被取消的任务，调用cancel会失败并返回false; 如果任务还未开始，调用cancel后，任务将不会在被执行，并返回true; 如果任务正在进行中，参数mayInterruptIfRunning为true,则中断执行此任务的线程，false，任务则继续执行，直到完毕。&lt;/p&gt;
+&lt;p&gt;总结：到这儿，Future之所以被设计的原因已经很明了了，其实就是帮助我们可以自由的控制异步任务：可以通过它来查询异步任务的执行状态，取消任务，也可以获得正常的结果。&lt;br&gt;下面我们来看看FutureTask，Future接口的实际实现类。&lt;/p&gt;
+&lt;h2 id=&quot;Future的实现：FutureTask&quot;&gt;&lt;a href=&quot;#Future的实现：FutureTask&quot; class=&quot;headerlink&quot; title=&quot;Future的实现：FutureTask&quot;&gt;&lt;/a&gt;Future的实现：FutureTask&lt;/h2&gt;&lt;p&gt;其实FutureTask并非直接实现自Future接口，而是RunnableFuture接口，RunnableFutrue是什么，看下源码，便一目了然。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public interface RunnableFuture&amp;lt;V&amp;gt; extends Runnable, Future&amp;lt;V&amp;gt; {
+    void run();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;所以，FutureTask同时实现了Runnable和Future两大知名接口，所以FutureTask可以提交给&lt;a href=&quot;http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/&quot;&gt;Executor&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;#####FutureTask源码分析&lt;br&gt;首先我们来看一下FutureTask的两个个构造函数&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//构造函数一
+public FutureTask(Callable&amp;lt;V&amp;gt; callable) {
+    if (callable == null)
+        throw new NullPointerException();
+    this.callable = callable;
+    this.state = NEW;       // ensure visibility of callable
+}
+//构造函数二
+public FutureTask(Runnable runnable, V result) {
+    this.callable = Executors.callable(runnable, result);
+    this.state = NEW;       // ensure visibility of callable
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;源码显示，不管我们使用哪个构造函数，其内部都是把将传入的参数保存为callable，并且把状态置为NEW。FutureTask一共声明了7个状态。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;private static final int NEW          = 0;
+private static final int COMPLETING   = 1;
+private static final int NORMAL       = 2;
+private static final int EXCEPTIONAL  = 3;
+private static final int CANCELLED    = 4;
+private static final int INTERRUPTING = 5;
+private static final int INTERRUPTED  = 6;
+&lt;/code&gt;&lt;/pre&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;状态&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NEW&lt;/td&gt;
+&lt;td&gt;初始状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COMPLETING&lt;/td&gt;
+&lt;td&gt;进行中状态，表示正在设置结果。很短暂的一个状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NORMAL&lt;/td&gt;
+&lt;td&gt;正常结束的状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;EXCEPTIONAL&lt;/td&gt;
+&lt;td&gt;异常状态，任务异常结束&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;CANCELLED&lt;/td&gt;
+&lt;td&gt;任务成功被取消的状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INTERRUPTING&lt;/td&gt;
+&lt;td&gt;很短暂的状态，当在NEW状态下，调用了cancel(true),则状态就会转换为INTERRUPTING，直到执行了Thread#interrupt()方法，状态转换为INTERRUPTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INTERRUPTED&lt;/td&gt;
+&lt;td&gt;任务被中断后的状态&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id=&quot;run-方法讲解&quot;&gt;&lt;a href=&quot;#run-方法讲解&quot; class=&quot;headerlink&quot; title=&quot;run()方法讲解&quot;&gt;&lt;/a&gt;run()方法讲解&lt;/h4&gt;&lt;p&gt;FatureTask被创建后，下面进入run()方法，&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (state != NEW ||&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      !UNSAFE.compareAndSwapObject(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;, runnerOffset,&lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;, Thread.currentThread()))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Callable&amp;lt;V&amp;gt; c = callable;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (c != &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt; &amp;amp;&amp;amp; state == NEW) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;           V result;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;           &lt;span class=&quot;keyword&quot;&gt;boolean&lt;/span&gt; ran;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                result = c.call();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                ran = &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125; &lt;span class=&quot;keyword&quot;&gt;catch&lt;/span&gt; (Throwable ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               result = &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               ran = &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               setException(ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (ran)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               set(result);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;finally&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        runner = &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; s = state;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (s &amp;gt;= INTERRUPTING)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            handlePossibleCancellationInterrupt(s);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;在run()方法中，先进行状态检查，检查是否处于NEW状态，然后将执行线程的引用保存在runner的变量。FurtureTask的runner变量用来引用任务执行所在的线程。然后执行Callable的call的方法，进行任务执行。接下来会出现两种情况：&lt;br&gt;&lt;strong&gt;情况一：&lt;/strong&gt; 如果执行顺利完成，则调用set(result)的方法。在set()方法中，先将状态置为COMPLETING，然后将执行结果保存到全局变量outcome中，然后将状态置为NORMAL。然后调动finishCompletion()方法，通知所有等待结果的线程，并调用done()(在这里是个空方法)&lt;br&gt;&lt;strong&gt;情况二：&lt;/strong&gt;如果执行出现了异常。则执行setException()方法。在setException()方法中，操作基本和set()方法一样，只是outcome保存的是Throwable。&lt;/p&gt;
 &lt;p&gt;全局outcome变量：&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; Object outcome;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;h4 id=&quot;流程图&quot;&gt;&lt;a href=&quot;#流程图&quot; class=&quot;headerlink&quot; title=&quot;流程图&quot;&gt;&lt;/a&gt;流程图&lt;/h4&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;st=&amp;gt;start: Start&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond1=&amp;gt;condition: 处于NEW&amp;amp;&amp;amp;runner赋值成功&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;op1=&amp;gt;operation: 执行任务&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond2=&amp;gt;condition: 发生异常?&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;op2=&amp;gt;operation: 设置结果&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;op3=&amp;gt;operation: 设置异常结果&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;op4=&amp;gt;operation: runner设置为null&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;e=&amp;gt;end&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;op=&amp;gt;operation: My Operation&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;st-&amp;gt;cond1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond1(yes)-&amp;gt;op1-&amp;gt;cond2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond1(no)-&amp;gt;e&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond2(yes)-&amp;gt;op2-&amp;gt;op4-&amp;gt;e&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cond2(no)-&amp;gt;op3-&amp;gt;op4-&amp;gt;e&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
@@ -115,8 +128,8 @@ FatureTask被创建后，下面进入run()方法，
 &lt;/ol&gt;
 &lt;h5 id=&quot;get-方法的实现&quot;&gt;&lt;a href=&quot;#get-方法的实现&quot; class=&quot;headerlink&quot; title=&quot;get()方法的实现&quot;&gt;&lt;/a&gt;get()方法的实现&lt;/h5&gt;&lt;p&gt;get()方法首先还是进行状态监测，如果现在正处于NEW和COMPLETING状态，则会调用awaitDone()，直到状态的转变为其他状态，然后调用report()方法，在report()方法中，首先监测状态：如果是NORMAL状态，直接返回保存在outCome中的结果；如果是CANCELLED、INTERRUPTING、INTERRUPTED状态，则抛出CancellationException()；如果处于其他状态则抛出ExecutionException（比如调用了get(true,atime)方法，时间到期后状态可能还处于NEW状态）。&lt;br&gt;&lt;strong&gt;源码&lt;/strong&gt;&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * &lt;span class=&quot;doctag&quot;&gt;@throws&lt;/span&gt; CancellationException &amp;#123;&lt;span class=&quot;doctag&quot;&gt;@inheritDoc&lt;/span&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; V &lt;span class=&quot;title&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; InterruptedException, ExecutionException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; s = state;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (s &amp;lt;= COMPLETING)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        s = awaitDone(&lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;0L&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; report(s);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Returns result or throws exception for completed task.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * &lt;span class=&quot;doctag&quot;&gt;@param&lt;/span&gt; s completed state value&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@SuppressWarnings&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&quot;unchecked&quot;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; V &lt;span class=&quot;title&quot;&gt;report&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; s)&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; ExecutionException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Object x = outcome;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (s == NORMAL)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; (V)x;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (s &amp;gt;= CANCELLED)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; CancellationException();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; ExecutionException((Throwable)x);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;其中awaitDone(boolean timed, long nanos)方法用于等待任务完成、任务中断或时间到期。在此方法体中，显示将这次等待保存到全局变量watiers中，用于记录所有调用了get()渴望获得结果并堵塞的Thread，然后不停的循环查询state。直到时间到期或执行完成，则将循环中断，返回转变后的state供report()方法使用。&lt;/p&gt;
-&lt;p&gt;注：在FutureTask的的源码中，使用了&lt;a href=&quot;http://www.docjar.com/html/api/sun/misc/Unsafe.java.html&quot;&gt;sun.misc.Unsafe&lt;/a&gt;进行状态的赋值等操作，这是一个强大的对内存进行操作的类，可以通过它绕过jdk的很多限制。–&amp;gt;&lt;/p&gt;
---&gt;</content>
+&lt;p&gt;注：在FutureTask的的源码中，使用了&lt;a href=&quot;http://www.docjar.com/html/api/sun/misc/Unsafe.java.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sun.misc.Unsafe&lt;/a&gt;进行状态的赋值等操作，这是一个强大的对内存进行操作的类，可以通过它绕过jdk的很多限制。&lt;/p&gt;
+</content>
     
     <summary type="html">
     
@@ -138,13 +151,13 @@ FatureTask被创建后，下面进入run()方法，
     <link href="http://clfaa.com/2016/04/04/Android-concurrent%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94-Executor%E6%8E%A5%E5%8F%A3/"/>
     <id>http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/</id>
     <published>2016-04-03T18:30:45.000Z</published>
-    <updated>2016-04-04T11:08:02.000Z</updated>
+    <updated>2016-04-04T11:20:41.000Z</updated>
     
     <content type="html">&lt;h4 id=&quot;设计理念——为何而存在&quot;&gt;&lt;a href=&quot;#设计理念——为何而存在&quot; class=&quot;headerlink&quot; title=&quot;设计理念——为何而存在&quot;&gt;&lt;/a&gt;设计理念——为何而存在&lt;/h4&gt;&lt;p&gt;先来一发源码。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;public interface Executor {
     void execute(Runnable command);
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就是这么短。那么这么短的一个接口存在的意义是什么呢？&lt;br&gt;下面就来分析一下。&lt;br&gt;&amp;lt;!–more&lt;br&gt;当我们想创建并执行一个线程的时候，通常是这样的。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就是这么短。那么这么短的一个接口存在的意义是什么呢？&lt;br&gt;下面就来分析一下。&lt;br&gt;当我们想创建并执行一个线程的时候，通常是这样的。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;new Thread(new(RunnableTask())).start()
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;是不是短！平！快！。这样不是很好吗？但是使用这种方式，我们无法控制程序中线程的数量，创建过多的线程会带来性能问题。我们需要一种方式控制线程的数量，有时我们还希望控制各个任务之间调度关系。Executor接口正式为解决这个问题而来。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -224,7 +237,7 @@ executor.execute(new Runnable(){
 &lt;/blockquote&gt;
 &lt;p&gt;UML类图：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/Mediator_Pattern.jpg&quot; alt=&quot;Mediator_Pattern.jpg&quot;&gt;&lt;/p&gt;
-&lt;p&gt;其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。–&amp;gt;&lt;/p&gt;
+&lt;p&gt;其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。&lt;/p&gt;
 </content>
     
     <summary type="html">
