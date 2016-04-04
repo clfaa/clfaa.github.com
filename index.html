@@ -349,121 +349,7 @@
 <p>AsyncTask is designed to be a helper class around Thread and Handler and does not constitute a generic threading framework. AsyncTasks should ideally be used for short operations (a few seconds at the most.) If you need to keep threads running for long periods of time, it is highly recommended you use the various APIs provided by the java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.</p>
 <p>An asynchronous task is defined by a computation that runs on a background thread and whose result is published on the UI thread. An asynchronous task is defined by 3 generic types, called Params, Progress and Result, and 4 steps, called onPreExecute, doInBackground, onProgressUpdate and onPostExecute.</p>
 </blockquote>
-<p>翻译：<em>AsyncTask</em>可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作<em>thread</em>和<em>handler</em>。<br>AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用<em>java.util.concurrent</em>包提供的API,比如<em>Executor</em>,<em>TreadPoolExecutor</em>和<em>FutureTask</em>。<br>一个<em>AsyncTask</em>可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个<em>AsyncTask</em>需要指定<em>Params</em>,<em>Progress</em>,<em>Result</em>三个泛型的类型，在执行过程中将调用<em>onPreExecute</em>,<em>doInBackground</em>, <em>onProgressUpdate</em> 和 <em>onPostExecute</em>四个方法。</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>AsyncTask为抽象类,使用前必须先定义一个它的子类，实现<em>doInBackground()</em>方法，为Params,Progress,Result指定确切的参数。</p>
-<h5 id="实现说明"><a href="#实现说明" class="headerlink" title="实现说明"></a>实现说明</h5><table>
-<thead>
-<tr>
-<th>Type</th>
-<th style="text-align:left">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Params</td>
-<td style="text-align:left">任务所需参数的类型，变长参数；在调用任务执行方法execute()时，作为execute的参数使用。若不使用，指定为Void</td>
-</tr>
-<tr>
-<td>Progress</td>
-<td style="text-align:left">说明任务执行的进度的类型，如Integer等;若不使用，指定为Void</td>
-</tr>
-<tr>
-<td>Result</td>
-<td style="text-align:left">任务完成后返回的结果的类型,若不使用，指定为Void</td>
-</tr>
-</tbody>
-</table>
-<h5 id="方法调用顺序"><a href="#方法调用顺序" class="headerlink" title="方法调用顺序"></a>方法调用顺序</h5><table>
-<thead>
-<tr>
-<th>顺序</th>
-<th style="text-align:left">方法</th>
-<th style="text-align:left">运行位置</th>
-<th style="text-align:center">必须实现</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1.Task执行前</td>
-<td style="text-align:left">onPreExecute()</td>
-<td style="text-align:left">UI Thread</td>
-<td style="text-align:center">否</td>
-<td>在Task执行前调用（即，doInBackground()法前），可用于做一些任务执行前的操作，如显示一个ProgressDialog说明进度</td>
-</tr>
-<tr>
-<td>2.Task执行中</td>
-<td style="text-align:left">doInBackground(Params…)</td>
-<td style="text-align:left">background Thread</td>
-<td style="text-align:center">是</td>
-<td>用于执行Task,在此方法中，可以调用publishProgress(Progress…) 发布Task实时进度信息，在onProgressUpdate(Progress…)接收到发布的信息</td>
-</tr>
-<tr>
-<td>3.Task执行中</td>
-<td style="text-align:left">onProgressUpdate(Progress…)</td>
-<td style="text-align:left">UI Thread</td>
-<td style="text-align:center">否</td>
-<td>接收publishProgress(Progress…)发布的Task进度信息，可以在这里更新显示进度的界面，</td>
-</tr>
-<tr>
-<td>4.Task执行完成后</td>
-<td style="text-align:left">onPostExecute(Result)</td>
-<td style="text-align:left">UI Thread</td>
-<td style="text-align:center">否</td>
-<td>用于接收Task执行的结果，在UI thread中执行</td>
-</tr>
-</tbody>
-</table>
-<h5 id="官方提供的示例"><a href="#官方提供的示例" class="headerlink" title="官方提供的示例"></a>官方提供的示例</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个AysncTask类的子类</span></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownloadFilesTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">URL</span>, <span class="title">Integer</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> Long <span class="title">doInBackground</span><span class="params">(URL... urls)</span> </span>&#123;</span><br><span class="line">         <span class="keyword">int</span> count = urls.length;</span><br><span class="line">         <span class="keyword">long</span> totalSize = <span class="number">0</span>;</span><br><span class="line">         <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">             totalSize += Downloader.downloadFile(urls[i]);</span><br><span class="line">             publishProgress((<span class="keyword">int</span>) ((i / (<span class="keyword">float</span>) count) * <span class="number">100</span>));</span><br><span class="line">             <span class="comment">// Escape early if cancel() is called</span></span><br><span class="line">             <span class="keyword">if</span> (isCancelled()) <span class="keyword">break</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">return</span> totalSize;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Integer... progress)</span> </span>&#123;</span><br><span class="line">         setProgressPercent(progress[<span class="number">0</span>]);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Long result)</span> </span>&#123;</span><br><span class="line">         showDialog(<span class="string">"Downloaded "</span> + result + <span class="string">" bytes"</span>);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125; </span><br><span class="line"></span><br><span class="line"><span class="comment">//调用方式</span></span><br><span class="line"><span class="keyword">new</span> DownloadFilesTask().execute(url1, url2, url3);</span><br></pre></td></tr></table></figure>
-<p>在这个示例中，定义了一个AsyncTask的子类DownloadFilesTask，其中URL对应Params,Integer表示进度Progress,Long为执行结果Result的类型。<br>doInBackground()方法体的代码将在子线程中执行。<br>publishProgress()方法用来发布任务执行进度情况，此方法被调用后，会唤起在UI线程中执行的onProgresssUpdate()方法，并接收publishProgress()发布的信息，我们可以根据这些信息更新我们的view等。<br>当后台任务执行完成后，onPostExecute()方法会被调用，此方法也是在UI线程中执行。</p>
-<h5 id="使用注意事项"><a href="#使用注意事项" class="headerlink" title="使用注意事项"></a>使用注意事项</h5><ol>
-<li>AsyncTask类必须加载在UI thread。（Android系统会自动完成，不需要管）</li>
-<li>AsyncTask类的必须在UI thread中实例化。（因为AsyncTask中的Handler必须属于UI thread,AsyncTask才能和UI thread中执行）</li>
-<li>execute(Params…) 必须在UI thread中被调用。</li>
-<li>不要手动调用 onPreExecute(), onPostExecute(Result), doInBackground(Params…), onProgressUpdate(Progress…) 方法，这些方法的调用由AsyncTask自定完成</li>
-<li>一个AsyncTask的实例只能执行一次，即，execute(Params…)方法只能调用一次</li>
-</ol>
-<h3 id="取消Task"><a href="#取消Task" class="headerlink" title="取消Task"></a>取消Task</h3><p>官方说明:</p>
-<blockquote>
-<p>A task can be cancelled at any time by invoking <strong>cancel(boolean)</strong>. Invoking this method will cause subsequent calls to <strong>isCancelled()</strong> to return true. After invoking this method, <strong>onCancelled(Object)</strong>, instead of <strong>onPostExecute(Object) </strong>will be invoked after <strong>doInBackground(Object[])</strong> returns. To ensure that a task is cancelled as quickly as possible, you should always check the return value of <strong>isCancelled()</strong> periodically from <strong>doInBackground(Object[])</strong>， if possible (inside a loop for instance.)</p>
-</blockquote>
-<p>翻译：你可以在任何时候通过调用<strong>cancel(boolean)</strong>取消Task，<strong>cancel(boolean)</strong>方法被调用后，调用<strong>isCancelled()</strong>方法将返回<strong>True</strong>,并且在<strong>doInBackground(Object[])</strong>返回后，不在调用<strong>onPostExecute(Object) </strong>，而是调用 <strong>onCancelled(Object)</strong>。为了保证Task尽可能快的被取消掉，你应该在<strong>doInBackground(Object[])</strong>方法中不停的查询 <strong>isCancelled()</strong> 的返回值，最好在方法中实现一个循环。</p>
-<p>我们来看一下<strong>cancel(boolean)</strong>的源码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicBoolean mCancelled = <span class="keyword">new</span> AtomicBoolean();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span> </span>&#123;</span><br><span class="line">   mCancelled.set(<span class="keyword">true</span>);</span><br><span class="line">   <span class="keyword">return</span> mFuture.cancel(mayInterruptIfRunning);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><strong>cancle(boolean)</strong>只是将mCancelled的值置为true，而任是真正被取消的操作，要在doInBackground(Params)方法中通过查询mCancelled的值为true时才进行取消。</p>
-<p>官方指出最好在<strong>doInBackground(Object[])</strong>中实现一个循环，用来保证尽快收到任务取消的信息。代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> Void <span class="title">doInBackground</span><span class="params">(Integer... params)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (isCancelled())&#123;</span><br><span class="line">		<span class="comment">//do something</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h5 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h5><p>但是有时候，我们无法使用循环，比如读取文件、请求网络等。如果你调用了<strong>cancel(false)</strong>，任务会继续执行，直到任务完成，但<strong>onPostExecute()</strong>将不被会被调用，而是调用<strong>onCancel()</strong>。但我们的初衷是想让任务马上停止，而不是继续执行到完成，所以我们的程序做了无用功。如果使用cancel(true) 方法，即，参数mayInterruptIfRunning被置为true,那将提前中断我们的任务，但是如果我们的方法是不可中断的，例如BitmapFactory.decodeStream()方法，那么任务将继续执行。你可以过早的关闭这个流（stream）并捕获它抛出的异常，但这并不是通过调用<strong>cancel(true)</strong>完成的，因此<strong>cancel(true)</strong>就变的没有意义了。</p>
-<h3 id="执行顺序：多个AsyncTask实例之间的执行顺序"><a href="#执行顺序：多个AsyncTask实例之间的执行顺序" class="headerlink" title="执行顺序：多个AsyncTask实例之间的执行顺序"></a>执行顺序：多个AsyncTask实例之间的执行顺序</h3><p>在Android 1.6之前AsyncTask是顺序执行的，在一个App中，只有前一个Task执行完成后, 下一个AsyncTask才能执行。<br>在Android 1.6-Android2.3中，由一个线程池来管理多个线程，同一时刻，可以有多个Task在执行。<br>从Android3.0开始，Google为了避免并行执行给多个应用带来的错误，有改为了顺序执行。</p>
-<table>
-<thead>
-<tr>
-<th>版本</th>
-<th>执行顺序</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Android 1.6之前</td>
-<td>顺序执行：</td>
-</tr>
-<tr>
-<td>Android 1.6-Android2.3</td>
-<td>并行</td>
-</tr>
-<tr>
-<td>Android 3.0-至今</td>
-<td>顺序执行</td>
-</tr>
-</tbody>
-</table>
-<p>当然我们可以通过调用 executeOnExecutor(java.util.concurrent.Executor, Params…）而非execute(Params..)方法来完成并行执行。<br>比如:</p>
-<pre><code>aAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-</code></pre><h3 id="可能发生的内存泄露-Memory-leaks"><a href="#可能发生的内存泄露-Memory-leaks" class="headerlink" title="可能发生的内存泄露(Memory leaks)"></a>可能发生的内存泄露(Memory leaks)</h3><blockquote>
-<p><strong>我们可能有这样的错觉：当Activity被销毁时，其创建的AsyncTask也同样会被销毁——其实，并不然！</strong></p>
-</blockquote>
-<p>当Activity销毁后，AsyncTask继续执行直到完成。如果你在Activity#onDestroy()中调用了 cancel(boolean)方法，它会继续执行onCancelled(Result result)方法，如果你没有调用 cancel(boolean)方法，它会执行onPostExecute(Result) 方法。</p>
-<p>假如在Activity被销毁前，我们没有调用AsyncTask#cancel(boolean)方法。这可能引起内存泄露，导致程序崩溃。比如你在onPostExecute(Result) 中对Activity的View进行操作，但是这些View已经随着Activity的销毁不再存在。所以，我们要确保在Activity销毁前，取消掉Task。</p>
-<p>因为异步任务有方法在background Thread 中执行（doInBackground()），并且也有方法在UI线程中执行（比如，onPostExecute()）；在Task运行阶段，它将持有Activity的引用。但是如果Activity已经被销毁，它仍然持有这个的内存的引用。如何在后续的操作中，使用这个已经销毁的Activity的引用，将直接导致程序崩溃。</p>
-
+<p>翻译：<em>AsyncTask</em>可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作<em>thread</em>和<em>handler</em>。<br>AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用<em>java.util.concurrent</em>包提供的API,比如<em>Executor</em>,<em>TreadPoolExecutor</em>和<em>FutureTask</em>。<br>一个<em>AsyncTask</em>可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个<em>AsyncTask</em>需要指定<em>Params</em>,<em>Progress</em>,<em>Result</em>三个泛型的类型，在执行过程中将调用<em>onPreExecute</em>,<em>doInBackground</em>, <em>onProgressUpdate</em> 和 <em>onPostExecute</em>四个方法。<br>
       
     </div>
     
@@ -476,6 +362,10 @@
 
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2016/03/25/网络编程之AsyncTask使用总结/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>

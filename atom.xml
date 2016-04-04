@@ -278,14 +278,14 @@ executor.execute(new Runnable(){
     <link href="http://clfaa.com/2016/03/25/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E4%B9%8BAsyncTask%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/"/>
     <id>http://clfaa.com/2016/03/25/网络编程之AsyncTask使用总结/</id>
     <published>2016-03-25T14:18:06.000Z</published>
-    <updated>2016-04-04T11:24:58.000Z</updated>
+    <updated>2016-04-04T11:28:55.000Z</updated>
     
     <content type="html">&lt;h3 id=&quot;官方概述&quot;&gt;&lt;a href=&quot;#官方概述&quot; class=&quot;headerlink&quot; title=&quot;官方概述&quot;&gt;&lt;/a&gt;官方概述&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;AsyncTask enables proper and easy use of the UI thread. This class allows to perform background operations and publish results on the UI thread without having to manipulate threads and/or handlers.&lt;/p&gt;
 &lt;p&gt;AsyncTask is designed to be a helper class around Thread and Handler and does not constitute a generic threading framework. AsyncTasks should ideally be used for short operations (a few seconds at the most.) If you need to keep threads running for long periods of time, it is highly recommended you use the various APIs provided by the java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.&lt;/p&gt;
 &lt;p&gt;An asynchronous task is defined by a computation that runs on a background thread and whose result is published on the UI thread. An asynchronous task is defined by 3 generic types, called Params, Progress and Result, and 4 steps, called onPreExecute, doInBackground, onProgressUpdate and onPostExecute.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;翻译：&lt;em&gt;AsyncTask&lt;/em&gt;可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作&lt;em&gt;thread&lt;/em&gt;和&lt;em&gt;handler&lt;/em&gt;。&lt;br&gt;AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用&lt;em&gt;java.util.concurrent&lt;/em&gt;包提供的API,比如&lt;em&gt;Executor&lt;/em&gt;,&lt;em&gt;TreadPoolExecutor&lt;/em&gt;和&lt;em&gt;FutureTask&lt;/em&gt;。&lt;br&gt;一个&lt;em&gt;AsyncTask&lt;/em&gt;可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个&lt;em&gt;AsyncTask&lt;/em&gt;需要指定&lt;em&gt;Params&lt;/em&gt;,&lt;em&gt;Progress&lt;/em&gt;,&lt;em&gt;Result&lt;/em&gt;三个泛型的类型，在执行过程中将调用&lt;em&gt;onPreExecute&lt;/em&gt;,&lt;em&gt;doInBackground&lt;/em&gt;, &lt;em&gt;onProgressUpdate&lt;/em&gt; 和 &lt;em&gt;onPostExecute&lt;/em&gt;四个方法。&lt;/p&gt;
+&lt;p&gt;翻译：&lt;em&gt;AsyncTask&lt;/em&gt;可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作&lt;em&gt;thread&lt;/em&gt;和&lt;em&gt;handler&lt;/em&gt;。&lt;br&gt;AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用&lt;em&gt;java.util.concurrent&lt;/em&gt;包提供的API,比如&lt;em&gt;Executor&lt;/em&gt;,&lt;em&gt;TreadPoolExecutor&lt;/em&gt;和&lt;em&gt;FutureTask&lt;/em&gt;。&lt;br&gt;一个&lt;em&gt;AsyncTask&lt;/em&gt;可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个&lt;em&gt;AsyncTask&lt;/em&gt;需要指定&lt;em&gt;Params&lt;/em&gt;,&lt;em&gt;Progress&lt;/em&gt;,&lt;em&gt;Result&lt;/em&gt;三个泛型的类型，在执行过程中将调用&lt;em&gt;onPreExecute&lt;/em&gt;,&lt;em&gt;doInBackground&lt;/em&gt;, &lt;em&gt;onProgressUpdate&lt;/em&gt; 和 &lt;em&gt;onPostExecute&lt;/em&gt;四个方法。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&quot;使用&quot;&gt;&lt;a href=&quot;#使用&quot; class=&quot;headerlink&quot; title=&quot;使用&quot;&gt;&lt;/a&gt;使用&lt;/h3&gt;&lt;p&gt;AsyncTask为抽象类,使用前必须先定义一个它的子类，实现&lt;em&gt;doInBackground()&lt;/em&gt;方法，为Params,Progress,Result指定确切的参数。&lt;/p&gt;
 &lt;h5 id=&quot;实现说明&quot;&gt;&lt;a href=&quot;#实现说明&quot; class=&quot;headerlink&quot; title=&quot;实现说明&quot;&gt;&lt;/a&gt;实现说明&lt;/h5&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -404,7 +404,11 @@ executor.execute(new Runnable(){
     <summary type="html">
     
       &lt;h3 id=&quot;官方概述&quot;&gt;&lt;a href=&quot;#官方概述&quot; class=&quot;headerlink&quot; title=&quot;官方概述&quot;&gt;&lt;/a&gt;官方概述&lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;AsyncTask enables proper and easy use of the UI t
+&lt;p&gt;AsyncTask enables proper and easy use of the UI thread. This class allows to perform background operations and publish results on the UI thread without having to manipulate threads and/or handlers.&lt;/p&gt;
+&lt;p&gt;AsyncTask is designed to be a helper class around Thread and Handler and does not constitute a generic threading framework. AsyncTasks should ideally be used for short operations (a few seconds at the most.) If you need to keep threads running for long periods of time, it is highly recommended you use the various APIs provided by the java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.&lt;/p&gt;
+&lt;p&gt;An asynchronous task is defined by a computation that runs on a background thread and whose result is published on the UI thread. An asynchronous task is defined by 3 generic types, called Params, Progress and Result, and 4 steps, called onPreExecute, doInBackground, onProgressUpdate and onPostExecute.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;翻译：&lt;em&gt;AsyncTask&lt;/em&gt;可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作&lt;em&gt;thread&lt;/em&gt;和&lt;em&gt;handler&lt;/em&gt;。&lt;br&gt;AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用&lt;em&gt;java.util.concurrent&lt;/em&gt;包提供的API,比如&lt;em&gt;Executor&lt;/em&gt;,&lt;em&gt;TreadPoolExecutor&lt;/em&gt;和&lt;em&gt;FutureTask&lt;/em&gt;。&lt;br&gt;一个&lt;em&gt;AsyncTask&lt;/em&gt;可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个&lt;em&gt;AsyncTask&lt;/em&gt;需要指定&lt;em&gt;Params&lt;/em&gt;,&lt;em&gt;Progress&lt;/em&gt;,&lt;em&gt;Result&lt;/em&gt;三个泛型的类型，在执行过程中将调用&lt;em&gt;onPreExecute&lt;/em&gt;,&lt;em&gt;doInBackground&lt;/em&gt;, &lt;em&gt;onProgressUpdate&lt;/em&gt; 和 &lt;em&gt;onPostExecute&lt;/em&gt;四个方法。&lt;br&gt;
     
     </summary>
     
