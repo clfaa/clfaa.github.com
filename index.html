@@ -72,7 +72,7 @@
 						<li>Tags</li>
 						
 						
-						<li>About</li>
+						<li>Über</li>
 						
 					</ul>
 				</div>
@@ -642,7 +642,7 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="为什么替换"><a href="#为什么替换" class="headerlink" title="为什么替换"></a>为什么替换</h2><p>Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。<br>&lt;!–more</p>
+        <h2 id="为什么替换"><a href="#为什么替换" class="headerlink" title="为什么替换"></a>为什么替换</h2><p>Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。</p>
 <h2 id="修改keystore信息"><a href="#修改keystore信息" class="headerlink" title="修改keystore信息"></a>修改keystore信息</h2><blockquote>
 <p>想要替换默认的keystore，那么你的keystore的密码、别名等信息必须和默认debug.keystore的一样，默认debug.keystore的信息如下：<br>Keystore name: “debug.keystore”<br>Keystore password: “android”<br>Key alias: “androiddebugkey”<br>Key password: “android”<br>CN: “CN=Android Debug,O=Android,C=US”</p>
 </blockquote>
@@ -673,8 +673,7 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
             }
         }
 }
-</code></pre><p>–&gt;</p>
-
+</code></pre>
       
     </div>
     
@@ -731,13 +730,13 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
     <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
-<p>每一个github账号都可以创建一个用来存放个人主页，<strong>仓库的名字必须是username/username.github.io</strong>，创建完成之后就可以使用<strong>username.github.io</strong>来访问自己的个人主页了。<br>&lt;!–more</p>
+<p>每一个github账号都可以创建一个用来存放个人主页，<strong>仓库的名字必须是username/username.github.io</strong>，创建完成之后就可以使用<strong>username.github.io</strong>来访问自己的个人主页了。</p>
+</blockquote>
 <h2 id="创建仓库，生成默认主页"><a href="#创建仓库，生成默认主页" class="headerlink" title="创建仓库，生成默认主页"></a>创建仓库，生成默认主页</h2><ol>
 <li>登录<a href="https://github.com" target="_blank" rel="external">github</a>网站，（若没有账号，请自行注册）。</li>
 <li>创建新仓库：点击<strong>New respository</strong>，进入相应页面，填写仓库的信息，<strong>仓库的名字必须是username/username.github.io</strong>（即在<em>responsitory<br>name</em>输入框中填写<em>username.github.io</em>）,然后自行填写其他信息，点击<em>Create responsitory</em>按钮即完成了新仓库的创建。</li>
 <li>生成个人主页：进入刚刚创建的仓库主页，点击-&gt;setting-》Options-&gt;Github Pages: Launch automatic page generator-》填写个人主页信息-》Continue to Layouts”-&gt;选择一个自己喜欢的主题-》Publish,然后就可以通过<em>username.github.io</em>访问你的主页了。</li>
 </ol>
-</blockquote>
 <h2 id="绑定其他域名（可选）"><a href="#绑定其他域名（可选）" class="headerlink" title="绑定其他域名（可选）"></a>绑定其他域名（可选）</h2><blockquote>
 <p>如果其他域名访问个人主页，请进行下面的操作。</p>
 </blockquote>
@@ -745,7 +744,7 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
 <li>购买个人域名（我个人从新网购买的域名）</li>
 <li>注册<a href="https://www.dnspod.cn/Login" target="_blank" rel="external">DNSPod</a>，点击域名解析-》添加记录，如下图所示 <img src="./屏幕快照 2016-03-21 下午9.09.57.png" alt="Alt text"> </li>
 <li>到域名购买网站，修改dns解析服务器地址为：<strong>f1g1ns1.dnspod.net</strong> 和 <strong>f1g1ns2.dnspod.net</strong> </li>
-<li>将域名与个人主页绑定：到个人主页，再根目录下新建文件CNAME,在文件中添加你的域名（不要带http和www），等1-3天后，即可通过此域名访问自己的个人主页.–&gt;</li>
+<li>将域名与个人主页绑定：到个人主页，再根目录下新建文件CNAME,在文件中添加你的域名（不要带http和www），等1-3天后，即可通过此域名访问自己的个人主页。</li>
 </ol>
 
       

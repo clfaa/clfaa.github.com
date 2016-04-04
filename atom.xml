@@ -365,9 +365,9 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
     <link href="http://clfaa.com/2016/03/21/%E8%87%AA%E5%AE%9A%E4%B9%89keystore/"/>
     <id>http://clfaa.com/2016/03/21/自定义keystore/</id>
     <published>2016-03-21T14:50:57.000Z</published>
-    <updated>2016-04-04T11:10:49.000Z</updated>
+    <updated>2016-04-04T11:23:04.000Z</updated>
     
-    <content type="html">&lt;h2 id=&quot;为什么替换&quot;&gt;&lt;a href=&quot;#为什么替换&quot; class=&quot;headerlink&quot; title=&quot;为什么替换&quot;&gt;&lt;/a&gt;为什么替换&lt;/h2&gt;&lt;p&gt;Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。&lt;br&gt;&amp;lt;!–more&lt;/p&gt;
+    <content type="html">&lt;h2 id=&quot;为什么替换&quot;&gt;&lt;a href=&quot;#为什么替换&quot; class=&quot;headerlink&quot; title=&quot;为什么替换&quot;&gt;&lt;/a&gt;为什么替换&lt;/h2&gt;&lt;p&gt;Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。&lt;/p&gt;
 &lt;h2 id=&quot;修改keystore信息&quot;&gt;&lt;a href=&quot;#修改keystore信息&quot; class=&quot;headerlink&quot; title=&quot;修改keystore信息&quot;&gt;&lt;/a&gt;修改keystore信息&lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;想要替换默认的keystore，那么你的keystore的密码、别名等信息必须和默认debug.keystore的一样，默认debug.keystore的信息如下：&lt;br&gt;Keystore name: “debug.keystore”&lt;br&gt;Keystore password: “android”&lt;br&gt;Key alias: “androiddebugkey”&lt;br&gt;Key password: “android”&lt;br&gt;CN: “CN=Android Debug,O=Android,C=US”&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -398,8 +398,7 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
             }
         }
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;–&amp;gt;&lt;/p&gt;
-</content>
+&lt;/code&gt;&lt;/pre&gt;</content>
     
     <summary type="html">
     
@@ -421,16 +420,16 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
     <link href="http://clfaa.com/2016/03/21/%E5%9C%A8github%E4%B8%8A%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E4%B8%BB%E9%A1%B5/"/>
     <id>http://clfaa.com/2016/03/21/在github上创建个人主页/</id>
     <published>2016-03-21T13:25:42.000Z</published>
-    <updated>2016-04-04T11:10:25.000Z</updated>
+    <updated>2016-04-04T11:23:22.000Z</updated>
     
     <content type="html">&lt;blockquote&gt;
-&lt;p&gt;每一个github账号都可以创建一个用来存放个人主页，&lt;strong&gt;仓库的名字必须是username/username.github.io&lt;/strong&gt;，创建完成之后就可以使用&lt;strong&gt;username.github.io&lt;/strong&gt;来访问自己的个人主页了。&lt;br&gt;&amp;lt;!–more&lt;/p&gt;
+&lt;p&gt;每一个github账号都可以创建一个用来存放个人主页，&lt;strong&gt;仓库的名字必须是username/username.github.io&lt;/strong&gt;，创建完成之后就可以使用&lt;strong&gt;username.github.io&lt;/strong&gt;来访问自己的个人主页了。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h2 id=&quot;创建仓库，生成默认主页&quot;&gt;&lt;a href=&quot;#创建仓库，生成默认主页&quot; class=&quot;headerlink&quot; title=&quot;创建仓库，生成默认主页&quot;&gt;&lt;/a&gt;创建仓库，生成默认主页&lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;登录&lt;a href=&quot;https://github.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;github&lt;/a&gt;网站，（若没有账号，请自行注册）。&lt;/li&gt;
 &lt;li&gt;创建新仓库：点击&lt;strong&gt;New respository&lt;/strong&gt;，进入相应页面，填写仓库的信息，&lt;strong&gt;仓库的名字必须是username/username.github.io&lt;/strong&gt;（即在&lt;em&gt;responsitory&lt;br&gt;name&lt;/em&gt;输入框中填写&lt;em&gt;username.github.io&lt;/em&gt;）,然后自行填写其他信息，点击&lt;em&gt;Create responsitory&lt;/em&gt;按钮即完成了新仓库的创建。&lt;/li&gt;
 &lt;li&gt;生成个人主页：进入刚刚创建的仓库主页，点击-&amp;gt;setting-》Options-&amp;gt;Github Pages: Launch automatic page generator-》填写个人主页信息-》Continue to Layouts”-&amp;gt;选择一个自己喜欢的主题-》Publish,然后就可以通过&lt;em&gt;username.github.io&lt;/em&gt;访问你的主页了。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;/blockquote&gt;
 &lt;h2 id=&quot;绑定其他域名（可选）&quot;&gt;&lt;a href=&quot;#绑定其他域名（可选）&quot; class=&quot;headerlink&quot; title=&quot;绑定其他域名（可选）&quot;&gt;&lt;/a&gt;绑定其他域名（可选）&lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;如果其他域名访问个人主页，请进行下面的操作。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -438,7 +437,7 @@ AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBa
 &lt;li&gt;购买个人域名（我个人从新网购买的域名）&lt;/li&gt;
 &lt;li&gt;注册&lt;a href=&quot;https://www.dnspod.cn/Login&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;DNSPod&lt;/a&gt;，点击域名解析-》添加记录，如下图所示 &lt;img src=&quot;./屏幕快照 2016-03-21 下午9.09.57.png&quot; alt=&quot;Alt text&quot;&gt; &lt;/li&gt;
 &lt;li&gt;到域名购买网站，修改dns解析服务器地址为：&lt;strong&gt;f1g1ns1.dnspod.net&lt;/strong&gt; 和 &lt;strong&gt;f1g1ns2.dnspod.net&lt;/strong&gt; &lt;/li&gt;
-&lt;li&gt;将域名与个人主页绑定：到个人主页，再根目录下新建文件CNAME,在文件中添加你的域名（不要带http和www），等1-3天后，即可通过此域名访问自己的个人主页.–&amp;gt;&lt;/li&gt;
+&lt;li&gt;将域名与个人主页绑定：到个人主页，再根目录下新建文件CNAME,在文件中添加你的域名（不要带http和www），等1-3天后，即可通过此域名访问自己的个人主页。&lt;/li&gt;
 &lt;/ol&gt;
 </content>
     
