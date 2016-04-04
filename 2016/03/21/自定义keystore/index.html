@@ -14,7 +14,7 @@
 <meta property="og:description" content="为什么替换Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keysto">
 <meta property="og:image" content="http://clfaa.com/images/debug_key_eclipse.png">
 <meta property="og:image" content="http://clfaa.com/images/debug_key_intellj.png">
-<meta property="og:updated_time" content="2016-04-04T11:23:04.000Z">
+<meta property="og:updated_time" content="2016-04-04T11:27:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自定义Android debug keystore">
 <meta name="twitter:description" content="为什么替换Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keysto">
@@ -216,7 +216,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="为什么替换"><a href="#为什么替换" class="headerlink" title="为什么替换"></a>为什么替换</h2><p>Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。</p>
+        <h2 id="为什么替换"><a href="#为什么替换" class="headerlink" title="为什么替换"></a>为什么替换</h2><p>Android开发中，在使用第三方的sdk（如，百度地图，微信分享，友盟统计等）提供的功能时通常都要事先申请密钥，在申请密钥时需要填写keystore的数字签名（SHA1）。这样，只有使用此keystore打包生成的apk才能正常的调用这些第三方提供的功能。如果你不想在每次修改相关代码后，都要执行繁琐的验证打包安装等流程，才能测试相应得功能的话，就将此keystore替换默认keystore吧。如果你不想你团队的每一个人都要申请一个自己密钥进行调试的话，就把你的keystore分发给他们，让他们替换了吧。<br><a id="more"></a></p>
 <h2 id="修改keystore信息"><a href="#修改keystore信息" class="headerlink" title="修改keystore信息"></a>修改keystore信息</h2><blockquote>
 <p>想要替换默认的keystore，那么你的keystore的密码、别名等信息必须和默认debug.keystore的一样，默认debug.keystore的信息如下：<br>Keystore name: “debug.keystore”<br>Keystore password: “android”<br>Key alias: “androiddebugkey”<br>Key password: “android”<br>CN: “CN=Android Debug,O=Android,C=US”</p>
 </blockquote>
