@@ -10,7 +10,9 @@
 public interface Executor {
     void execute(Runnable command);
 }
-就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。">
+就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。&amp;lt;!–more当我们想创建并执行一个线程的时候，通常是这样的。
+new Thread(new(RunnableTask())).start()
+是不是短！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android concurrent（一）—— Executor接口">
 <meta property="og:url" content="http://clfaa.com/2016/04/04/Android-concurrent（一）——-Executor接口/index.html">
@@ -19,16 +21,20 @@ public interface Executor {
 public interface Executor {
     void execute(Runnable command);
 }
-就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。">
+就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。&amp;lt;!–more当我们想创建并执行一个线程的时候，通常是这样的。
+new Thread(new(RunnableTask())).start()
+是不是短！">
 <meta property="og:image" content="http://clfaa.com/images/Mediator_Pattern.jpg">
-<meta property="og:updated_time" content="2016-04-04T11:05:09.000Z">
+<meta property="og:updated_time" content="2016-04-04T11:08:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android concurrent（一）—— Executor接口">
 <meta name="twitter:description" content="设计理念——为何而存在先来一发源码。
 public interface Executor {
     void execute(Runnable command);
 }
-就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。">
+就是这么短。那么这么短的一个接口存在的意义是什么呢？下面就来分析一下。&amp;lt;!–more当我们想创建并执行一个线程的时候，通常是这样的。
+new Thread(new(RunnableTask())).start()
+是不是短！">
 <meta name="twitter:image" content="http://clfaa.com/images/Mediator_Pattern.jpg">
   
     <link rel="alternative" href="/atom.xml" title="常飞" type="application/atom+xml">
@@ -87,7 +93,7 @@ public interface Executor {
 						<li>Tags</li>
 						
 						
-						<li>About</li>
+						<li>Über</li>
 						
 					</ul>
 				</div>
@@ -231,7 +237,7 @@ public interface Executor {
 <pre><code>public interface Executor {
     void execute(Runnable command);
 }
-</code></pre><p>就是这么短。那么这么短的一个接口存在的意义是什么呢？<br>下面就来分析一下。<br><a id="more"></a><br>当我们想创建并执行一个线程的时候，通常是这样的。</p>
+</code></pre><p>就是这么短。那么这么短的一个接口存在的意义是什么呢？<br>下面就来分析一下。<br>&lt;!–more<br>当我们想创建并执行一个线程的时候，通常是这样的。</p>
 <pre><code>new Thread(new(RunnableTask())).start()
 </code></pre><p>是不是短！平！快！。这样不是很好吗？但是使用这种方式，我们无法控制程序中线程的数量，创建过多的线程会带来性能问题。我们需要一种方式控制线程的数量，有时我们还希望控制各个任务之间调度关系。Executor接口正式为解决这个问题而来。</p>
 <blockquote>
@@ -311,7 +317,7 @@ executor.execute(new Runnable(){
 </blockquote>
 <p>UML类图：</p>
 <p><img src="/images/Mediator_Pattern.jpg" alt="Mediator_Pattern.jpg"></p>
-<p>其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。</p>
+<p>其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。–&gt;</p>
 
       
     </div>

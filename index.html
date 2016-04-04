@@ -72,7 +72,7 @@
 						<li>Tags</li>
 						
 						
-						<li>About</li>
+						<li>Über</li>
 						
 					</ul>
 				</div>
@@ -359,7 +359,88 @@ private static final int INTERRUPTED  = 6;
 <pre><code>public interface Executor {
     void execute(Runnable command);
 }
-</code></pre><p>就是这么短。那么这么短的一个接口存在的意义是什么呢？<br>下面就来分析一下。<br>
+</code></pre><p>就是这么短。那么这么短的一个接口存在的意义是什么呢？<br>下面就来分析一下。<br>&lt;!–more<br>当我们想创建并执行一个线程的时候，通常是这样的。</p>
+<pre><code>new Thread(new(RunnableTask())).start()
+</code></pre><p>是不是短！平！快！。这样不是很好吗？但是使用这种方式，我们无法控制程序中线程的数量，创建过多的线程会带来性能问题。我们需要一种方式控制线程的数量，有时我们还希望控制各个任务之间调度关系。Executor接口正式为解决这个问题而来。</p>
+<blockquote>
+<p>Executor接口官方介绍：An object that executes submitted Runnable tasks. This interface provides a way of decoupling task submission from the mechanics of how each task will be run, including details of thread use, scheduling, etc.  An Executor is normally used instead of explicitly creating threads. </p>
+</blockquote>
+<p>意思：Executor是用来提交Runnable的。它可以将Runnable的递交、使用的细节、调度与执行解耦。用来代替直接创建Thread的方式。</p>
+<p>不容易理解？莫关系！下面通过一个实际应用来解释这段话。</p>
+<p>比如，你想保证任务的顺序执行（每个时刻只有一个Runnable在执行，只有上一个Runnable执行完毕之后才会执行下一个Runnable）并且为每一个Runnable创建一个新的Thread。我们可以这样做:</p>
+<pre><code>  //SerialExecutor提供调度功能，将用户提交的Runnable保存到一个队列里面，然后顺序执行
+  class SerialExecutor implements Executor {
+    //队列，用来存放提交进来的Runnable
+    final Queue&lt;Runnable&gt; tasks = new ArrayDeque&lt;Runnable&gt;();
+    //提交进来的Runnable实际执行的位置。
+    final Executor executor;
+    //当前正在执行的Runnable
+    Runnable active;
+    SerialExecutor(Executor executor) {
+      this.executor = executor;
+    }
+    public synchronized void execute(final Runnable r) {
+      //将Runnable包装，并添加到队里中。
+      tasks.offer(new Runnable() {
+        public void run() {
+          try {
+            r.run();
+          } finally {
+            //执行完毕后，会自动调用队里中的下一个Runnable
+            scheduleNext();
+          }
+        }
+      });
+      if (active == null) {
+        //首次调度
+        scheduleNext();
+      }
+    }
+    protected synchronized void scheduleNext() {
+      if ((active = tasks.poll()) != null) {
+        executor.execute(active);
+      }
+    }
+  }}
+
+//ThreadPerTaskExecutor是Runnable的实际执行的地方。为每一个Runnable创建一个Thread。
+class ThreadPerTaskExecutor implements Executor {
+ public void execute(Runnable r) {
+     new Thread(r).start();
+ }
+}}
+
+//执行：只有任务1执行完毕后才会执行任务2
+Executor executor = new SerialExecutor(new ThreadPerTaskExecutor());
+executor.execute(new Runnable(){
+    public void run() {
+         //任务1...     
+    }
+});
+executor.execute(new Runnable(){
+    public void run() {
+         //任务2...     
+    }
+});
+</code></pre><p>在这个例子中，SerialExecutor用于Runnable的调度，它将Runnable进行简单的包装，并保存到队里中。经过包装后，不仅会执行原始提交Runnable的代码，并且会执行结束后调用队列中的下一个Runnable。就这样,SerialExecutor实现了Runnable的顺序执行。而ThreadPerTaskExecutor类则是用来控制Runnable执行细节的地方，在这里，我们简单的为每个Runnable创建了新的Thread，在实际应用中，你可以使用线程池来复用Thread。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>Executor被创造的原因：将任务的执行、任务的调度、任务的执行细节进行解耦。</p>
+<ol>
+<li>任务是如何调度的，你是想一个个的顺序执行，还是想多个任务一起并发并能自由的控制并发数量上线，都可以通过自己实现Executor接口进行定制。你只需要将任务通过Executor#execute(Runnable)方法提交进来就可以了，具体的调度方案，Runnable不需要关注。这样就实现了任务执行和调度的解耦。</li>
+<li>对于任务的执行细节，你是想为每个任务都创建新的线程，还是想复用已有的线程，也可以通过实现Executor接口进行定制。同样，你只需要将任务通过Executor#execute(Runnable)方法提交进来就可以了，具体的执行细节，Runnable不需要关注。这样就实现了任务执行和执行细节的解耦。</li>
+</ol>
+<h4 id="设计模式的使用：中介者模式"><a href="#设计模式的使用：中介者模式" class="headerlink" title="设计模式的使用：中介者模式"></a>设计模式的使用：中介者模式</h4><p>在这里，使用了设计模式中的<strong>中介者模式</strong>，下面是中介者模式的定义和UML类图。</p>
+<blockquote>
+<p>中介者模式（Mediator Pattern）：定义一个中介对象来封装系列对象之间的交互。中介者使各个对象不需要显示地相互引用，从而使其耦合性松散，而且可以独立地改变他们之间的交互。</p>
+<ol>
+<li>抽象中介者（Mediator）角色：抽象中介者角色定义统一的接口用于各同事角色之间的通信。</li>
+<li>具体中介者（Concrete Mediator）角色：具体中介者角色通过协调各同事角色实现协作行为。为此它要知道并引用各个同事角色。</li>
+<li>同事（Colleague）角色：每一个同事角色都知道对应的具体中介者角色，而且与其他的同事角色通信的时候，一定要通过中介者角色协作。——《设计模式》</li>
+</ol>
+</blockquote>
+<p>UML类图：</p>
+<p><img src="/images/Mediator_Pattern.jpg" alt="Mediator_Pattern.jpg"></p>
+<p>其中Executor就是一个抽象中介者角色，Executor的具体实现就是一个具体中介者角色，每个Runnable就相当于同事角色，Executor的execute(Runnable…)方法即是各个Runnable之间通信的接口，每个Runnable都被提交到Executor的具体实现类中，由Executor的具体实现类来协调各Runnable之间的实现协作行为。–&gt;</p>
+
       
     </div>
     
@@ -372,10 +453,6 @@ private static final int INTERRUPTED  = 6;
 
       
 
-      
-        <p class="article-more-link">
-          <a  href="/2016/04/04/Android-concurrent（一）——-Executor接口/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
