@@ -248,79 +248,39 @@ executor.execute(new Runnable(){
     <link href="http://clfaa.com/2016/03/25/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E4%B9%8BAsyncTask%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/"/>
     <id>http://clfaa.com/2016/03/25/网络编程之AsyncTask使用总结/</id>
     <published>2016-03-25T14:18:06.000Z</published>
-    <updated>2016-04-04T11:09:50.000Z</updated>
+    <updated>2016-04-04T11:18:45.000Z</updated>
     
     <content type="html">&lt;h3 id=&quot;官方概述&quot;&gt;&lt;a href=&quot;#官方概述&quot; class=&quot;headerlink&quot; title=&quot;官方概述&quot;&gt;&lt;/a&gt;官方概述&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;AsyncTask enables proper and easy use of the UI thread. This class allows to perform background operations and publish results on the UI thread without having to manipulate threads and/or handlers.&lt;/p&gt;
 &lt;p&gt;AsyncTask is designed to be a helper class around Thread and Handler and does not constitute a generic threading framework. AsyncTasks should ideally be used for short operations (a few seconds at the most.) If you need to keep threads running for long periods of time, it is highly recommended you use the various APIs provided by the java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.&lt;/p&gt;
 &lt;p&gt;An asynchronous task is defined by a computation that runs on a background thread and whose result is published on the UI thread. An asynchronous task is defined by 3 generic types, called Params, Progress and Result, and 4 steps, called onPreExecute, doInBackground, onProgressUpdate and onPostExecute.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;翻译：&lt;em&gt;AsyncTask&lt;/em&gt;可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作&lt;em&gt;thread&lt;/em&gt;和&lt;em&gt;handler&lt;/em&gt;。&lt;br&gt;AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用&lt;em&gt;java.util.concurrent&lt;/em&gt;包提供的API,比如&lt;em&gt;Executor&lt;/em&gt;,&lt;em&gt;TreadPoolExecutor&lt;/em&gt;和&lt;em&gt;FutureTask&lt;/em&gt;。&lt;br&gt;一个&lt;em&gt;AsyncTask&lt;/em&gt;可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个&lt;em&gt;AsyncTask&lt;/em&gt;需要指定&lt;em&gt;Params&lt;/em&gt;,&lt;em&gt;Progress&lt;/em&gt;,&lt;em&gt;Result&lt;/em&gt;三个泛型的类型，在执行过程中将调用&lt;em&gt;onPreExecute&lt;/em&gt;,&lt;em&gt;doInBackground&lt;/em&gt;, &lt;em&gt;onProgressUpdate&lt;/em&gt; 和 &lt;em&gt;onPostExecute&lt;/em&gt;四个方法。&lt;br&gt;&amp;lt;!–more&lt;/p&gt;
-&lt;h3 id=&quot;使用&quot;&gt;&lt;a href=&quot;#使用&quot; class=&quot;headerlink&quot; title=&quot;使用&quot;&gt;&lt;/a&gt;使用&lt;/h3&gt;&lt;p&gt;AsyncTask为抽象类,使用前必须先定义一个它的子类，实现&lt;em&gt;doInBackground()&lt;/em&gt;方法，为Params,Progress,Result指定确切的参数。&lt;/p&gt;
-&lt;h5 id=&quot;实现说明&quot;&gt;&lt;a href=&quot;#实现说明&quot; class=&quot;headerlink&quot; title=&quot;实现说明&quot;&gt;&lt;/a&gt;实现说明&lt;/h5&gt;&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Type&lt;/th&gt;
-&lt;th style=&quot;text-align:left&quot;&gt;说明&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;Params&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;任务所需参数的类型，变长参数；在调用任务执行方法execute()时，作为execute的参数使用。若不使用，指定为Void&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Progress&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;说明任务执行的进度的类型，如Integer等;若不使用，指定为Void&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Result&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;任务完成后返回的结果的类型,若不使用，指定为Void&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h5 id=&quot;方法调用顺序&quot;&gt;&lt;a href=&quot;#方法调用顺序&quot; class=&quot;headerlink&quot; title=&quot;方法调用顺序&quot;&gt;&lt;/a&gt;方法调用顺序&lt;/h5&gt;&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;顺序&lt;/th&gt;
-&lt;th style=&quot;text-align:left&quot;&gt;方法&lt;/th&gt;
-&lt;th style=&quot;text-align:left&quot;&gt;运行位置&lt;/th&gt;
-&lt;th style=&quot;text-align:center&quot;&gt;必须实现&lt;/th&gt;
-&lt;th&gt;作用&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;1.Task执行前&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;onPreExecute()&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;UI Thread&lt;/td&gt;
-&lt;td style=&quot;text-align:center&quot;&gt;否&lt;/td&gt;
-&lt;td&gt;在Task执行前调用（即，doInBackground()法前），可用于做一些任务执行前的操作，如显示一个ProgressDialog说明进度&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;2.Task执行中&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;doInBackground(Params…)&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;background Thread&lt;/td&gt;
-&lt;td style=&quot;text-align:center&quot;&gt;是&lt;/td&gt;
-&lt;td&gt;用于执行Task,在此方法中，可以调用publishProgress(Progress…) 发布Task实时进度信息，在onProgressUpdate(Progress…)接收到发布的信息&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;3.Task执行中&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;onProgressUpdate(Progress…)&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;UI Thread&lt;/td&gt;
-&lt;td style=&quot;text-align:center&quot;&gt;否&lt;/td&gt;
-&lt;td&gt;接收publishProgress(Progress…)发布的Task进度信息，可以在这里更新显示进度的界面，&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;4.Task执行完成后&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;onPostExecute(Result)&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;UI Thread&lt;/td&gt;
-&lt;td style=&quot;text-align:center&quot;&gt;否&lt;/td&gt;
-&lt;td&gt;用于接收Task执行的结果，在UI thread中执行&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h5 id=&quot;官方提供的示例&quot;&gt;&lt;a href=&quot;#官方提供的示例&quot; class=&quot;headerlink&quot; title=&quot;官方提供的示例&quot;&gt;&lt;/a&gt;官方提供的示例&lt;/h5&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//定义一个AysncTask类的子类&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;DownloadFilesTask&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;AsyncTask&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;URL&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;Integer&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;Long&lt;/span&gt;&amp;gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; Long &lt;span class=&quot;title&quot;&gt;doInBackground&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(URL... urls)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; count = urls.length;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; totalSize = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;; i &amp;lt; count; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             totalSize += Downloader.downloadFile(urls[i]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             publishProgress((&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;) ((i / (&lt;span class=&quot;keyword&quot;&gt;float&lt;/span&gt;) count) * &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;comment&quot;&gt;// Escape early if cancel() is called&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (isCancelled()) &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; totalSize;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;onProgressUpdate&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Integer... progress)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         setProgressPercent(progress[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;onPostExecute&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Long result)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         showDialog(&lt;span class=&quot;string&quot;&gt;&quot;Downloaded &quot;&lt;/span&gt; + result + &lt;span class=&quot;string&quot;&gt;&quot; bytes&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &amp;#125; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//调用方式&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; DownloadFilesTask().execute(url1, url2, url3);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;翻译：&lt;em&gt;AsyncTask&lt;/em&gt;可以恰当方便的操作UI线程。它可以执行后台任务，并把任务结果发布到UI线程，而且不需要手动的操作&lt;em&gt;thread&lt;/em&gt;和&lt;em&gt;handler&lt;/em&gt;。&lt;br&gt;AsyncTask并不是一个通常的线程框架，而是为Thread和Handler设计的帮助类。AsyncTask最适合用于耗时较短（最多几秒钟）的操作。如果需要在线程中执行长时间的操作，强烈推荐使用&lt;em&gt;java.util.concurrent&lt;/em&gt;包提供的API,比如&lt;em&gt;Executor&lt;/em&gt;,&lt;em&gt;TreadPoolExecutor&lt;/em&gt;和&lt;em&gt;FutureTask&lt;/em&gt;。&lt;br&gt;一个&lt;em&gt;AsyncTask&lt;/em&gt;可以把操作的执行过程放到子线程中执行，把执行结果发布到UI线程。定义一个&lt;em&gt;AsyncTask&lt;/em&gt;需要指定&lt;em&gt;Params&lt;/em&gt;,&lt;em&gt;Progress&lt;/em&gt;,&lt;em&gt;Result&lt;/em&gt;三个泛型的类型，在执行过程中将调用&lt;em&gt;onPreExecute&lt;/em&gt;,&lt;em&gt;doInBackground&lt;/em&gt;, &lt;em&gt;onProgressUpdate&lt;/em&gt; 和 &lt;em&gt;onPostExecute&lt;/em&gt;四个方法。&lt;/p&gt;
+&lt;!--more
+
+### 使用
+AsyncTask为抽象类,使用前必须先定义一个它的子类，实现*doInBackground()*方法，为Params,Progress,Result指定确切的参数。
+##### 实现说明
+| Type| 说明 |
+| ------------| :------------------------------------------|
+|Params|    任务所需参数的类型，变长参数；在调用任务执行方法execute()时，作为execute的参数使用。若不使用，指定为Void |
+|Progress| 说明任务执行的进度的类型，如Integer等;若不使用，指定为Void|
+|Result    |  任务完成后返回的结果的类型,若不使用，指定为Void|
+
+##### 方法调用顺序
+
+|顺序|方法|运行位置|必须实现|作用|
+|------------| :------------|:------------| :--------:|---------------------|
+|1.Task执行前| onPreExecute()|UI Thread|否|在Task执行前调用（即，doInBackground()法前），可用于做一些任务执行前的操作，如显示一个ProgressDialog说明进度|
+|2.Task执行中| doInBackground(Params...)|background Thread|是|用于执行Task,在此方法中，可以调用publishProgress(Progress...) 发布Task实时进度信息，在onProgressUpdate(Progress...)接收到发布的信息|
+|3.Task执行中|onProgressUpdate(Progress...)|UI Thread|否|接收publishProgress(Progress...)发布的Task进度信息，可以在这里更新显示进度的界面，|
+|4.Task执行完成后| onPostExecute(Result)|UI Thread|否|用于接收Task执行的结果，在UI thread中执行|
+
+
+
+##### 官方提供的示例
+
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//定义一个AysncTask类的子类&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;DownloadFilesTask&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;AsyncTask&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;URL&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;Integer&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;Long&lt;/span&gt;&amp;gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; Long &lt;span class=&quot;title&quot;&gt;doInBackground&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(URL... urls)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; count = urls.length;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; totalSize = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;; i &amp;lt; count; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             totalSize += Downloader.downloadFile(urls[i]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             publishProgress((&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;) ((i / (&lt;span class=&quot;keyword&quot;&gt;float&lt;/span&gt;) count) * &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;comment&quot;&gt;// Escape early if cancel() is called&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (isCancelled()) &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; totalSize;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;onProgressUpdate&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Integer... progress)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         setProgressPercent(progress[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;onPostExecute&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Long result)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;         showDialog(&lt;span class=&quot;string&quot;&gt;&quot;Downloaded &quot;&lt;/span&gt; + result + &lt;span class=&quot;string&quot;&gt;&quot; bytes&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &amp;#125; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//调用方式&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; DownloadFilesTask().execute(url1, url2, url3);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;在这个示例中，定义了一个AsyncTask的子类DownloadFilesTask，其中URL对应Params,Integer表示进度Progress,Long为执行结果Result的类型。&lt;br&gt;doInBackground()方法体的代码将在子线程中执行。&lt;br&gt;publishProgress()方法用来发布任务执行进度情况，此方法被调用后，会唤起在UI线程中执行的onProgresssUpdate()方法，并接收publishProgress()发布的信息，我们可以根据这些信息更新我们的view等。&lt;br&gt;当后台任务执行完成后，onPostExecute()方法会被调用，此方法也是在UI线程中执行。&lt;/p&gt;
 &lt;h5 id=&quot;使用注意事项&quot;&gt;&lt;a href=&quot;#使用注意事项&quot; class=&quot;headerlink&quot; title=&quot;使用注意事项&quot;&gt;&lt;/a&gt;使用注意事项&lt;/h5&gt;&lt;ol&gt;
 &lt;li&gt;AsyncTask类必须加载在UI thread。（Android系统会自动完成，不需要管）&lt;/li&gt;
@@ -369,7 +329,7 @@ executor.execute(new Runnable(){
 &lt;p&gt;当Activity销毁后，AsyncTask继续执行直到完成。如果你在Activity#onDestroy()中调用了 cancel(boolean)方法，它会继续执行onCancelled(Result result)方法，如果你没有调用 cancel(boolean)方法，它会执行onPostExecute(Result) 方法。&lt;/p&gt;
 &lt;p&gt;假如在Activity被销毁前，我们没有调用AsyncTask#cancel(boolean)方法。这可能引起内存泄露，导致程序崩溃。比如你在onPostExecute(Result) 中对Activity的View进行操作，但是这些View已经随着Activity的销毁不再存在。所以，我们要确保在Activity销毁前，取消掉Task。&lt;/p&gt;
 &lt;p&gt;因为异步任务有方法在background Thread 中执行（doInBackground()），并且也有方法在UI线程中执行（比如，onPostExecute()）；在Task运行阶段，它将持有Activity的引用。但是如果Activity已经被销毁，它仍然持有这个的内存的引用。如何在后续的操作中，使用这个已经销毁的Activity的引用，将直接导致程序崩溃。–&amp;gt;&lt;/p&gt;
-</content>
+--&gt;</content>
     
     <summary type="html">
     
